@@ -14,7 +14,7 @@ var raster = new ol.layer.Tile({
 var vector = new ol.layer.Vector({
   renderMode: 'image',
   source: new ol.source.Vector({
-    url: 'https://github.com/Bourbon0212/Diana-Visualization/blob/master/assets/twCounty.geojson',
+    url: 'https://github.com/cartus0910/WebGIS/blob/master/Final_Project/TW_Vill_simplified.geojson',
     format: new ol.format.GeoJSON()
   }),
   style: new ol.style.Style({
