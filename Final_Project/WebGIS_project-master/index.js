@@ -1,3 +1,6 @@
+proj4.defs("EPSG:3824","+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs");
+proj4.defs('urn:ogc:def:crs:EPSG::3824',      proj4.defs('EPSG:3824'));
+
 var view = new ol.View({
   center: ol.proj.fromLonLat([121, 23.5]),
   // minZoom: 7.2,
@@ -14,7 +17,7 @@ var raster = new ol.layer.Tile({
 var vector = new ol.layer.Vector({
   renderMode: 'image',
   source: new ol.source.Vector({
-    url: 'https://github.com/cartus0910/WebGIS/blob/master/Final_Project/TW_Vill_simplified.geojson',
+    url: 'https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/TW_Vill_simplified.geojson',
     format: new ol.format.GeoJSON()
   }),
   style: new ol.style.Style({
