@@ -22,12 +22,6 @@ var Taidong = ol.proj.fromLonLat([121.052658, 22.845853])
 var Hualian = ol.proj.fromLonLat([121.411609, 23.815980])
 var LianJian = ol.proj.fromLonLat([119.953364, 26.180745])
 
-// var view = new ol.View({
-//   center: taipei,
-//   zoom: 7.5
-// })
-// var view = map.getView();
-
 function doPan(location) {
 
   view.animate({
@@ -110,119 +104,33 @@ function changeCity() {
     $('#district').append(newOpt);
   }
   //------------------------------------
-
-  if (City == "0") {
-    //console.log(City);
-    // move(taipei);
-    // view.animate({
-    //   center: taipei,
-    //   duration: 2000
-    // });
-    func(Taipei);
+  var put = [Taipei,Keelung,Newtaipei,Yeeelan,Taoyuan,Xinchu_city,Xinchu,
+                Miaoli,Taizhong,Zhanghua,Nantou,Jiayi_city,Jiayi,Yunlin,
+                Tainan,Kaoshong,Ponghu,Jingman,Pingdon,Taidong,Hualian,LianJian];
+  for(i=0; i<22; i++){
+    if (City == i) {
+      func(put[i]);
+    }
   }
+}
 
-  if (City == "1") {
-    //console.log(City);
-    func(Keelung);
-  }
+//-----------------------------------------------
+//"pointermove geojson"
 
-  if (City == "2") {
-    //console.log(City);
-    func(Newtaipei);
-  }
+var select = new ol.interaction.Select({
+  condition: ol.events.condition.pointerMove
+});
 
-  if (City == "3") {
-    //console.log(City);
-    func(Yeeelan);
-  }
+if (select !== null) {
+  map.addInteraction(select);
+}
 
-  if (City == "4") {
-    //console.log(City);
-    func(Taoyuan);
-  }
+function add_interaction() {
+  //console.log(123);
+  map.addInteraction(select);
+}
 
-  if (City == "5") {
-    //console.log(City);
-    func(Xinchu_city);
-  }
-
-  if (City == "6") {
-    //console.log(City);
-    func(Xinchu);
-  }
-
-  if (City == "7") {
-    //console.log(City);
-    func(Miaoli);
-  }
-
-  if (City == "8") {
-    //console.log(City);
-    func(Taizhong);
-  }
-
-  if (City == "9") {
-    //console.log(City);
-    func(Zhanghua);
-  }
-
-  if (City == "10") {
-    //console.log(City);
-    func(Nantou);
-  }
-
-  if (City == "11") {
-    //console.log(City);
-    func(Jiayi_city);
-  }
-
-  if (City == "12") {
-    //console.log(City);
-    func(Jiayi);
-  }
-
-  if (City == "13") {
-    //console.log(City);
-    func(Yunlin);
-  }
-
-  if (City == "14") {
-    //console.log(City);
-    func(Tainan);
-  }
-
-  if (City == "15") {
-    //console.log(City);
-    func(Kaoshong);
-  }
-
-  if (City == "16") {
-    //console.log(City);
-    func(Ponghu);
-  }
-
-  if (City == "17") {
-    //console.log(City);
-    func(Jingman);
-  }
-
-  if (City == "18") {
-    //console.log(City);
-    func(Pingdon);
-  }
-
-  if (City == "19") {
-    //console.log(City);
-    func(Taidong);
-  }
-
-  if (City == "20") {
-    //console.log(City);
-    func(Hualian);
-  }
-
-  if (City == "21") {
-    //console.log(City);
-    func(LianJian);
-  }
+//del_interaction
+function del_interaction() {
+  map.removeInteraction(select);
 }

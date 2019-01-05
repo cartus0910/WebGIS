@@ -1,5 +1,6 @@
 proj4.defs("EPSG:3824","+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs");
 proj4.defs('urn:ogc:def:crs:EPSG::3824',      proj4.defs('EPSG:3824'));
+ol.proj.proj4.register(proj4);
 
 var view = new ol.View({
   center: ol.proj.fromLonLat([121, 23.5]),
@@ -17,7 +18,7 @@ var raster = new ol.layer.Tile({
 var vector = new ol.layer.Vector({
   renderMode: 'image',
   source: new ol.source.Vector({
-    url: 'https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/vill_json_pretty.geojson',
+    url: 'https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/TW_Vill_simplified.geojson',
     format: new ol.format.GeoJSON()
   }),
   style: new ol.style.Style({
@@ -37,26 +38,6 @@ var map = new ol.Map({
   layers: [raster, vector, pointLayer],
   view: view
 });
-
-//-----------------------------------------------
-//"pointermove geojson"
-var select = new ol.interaction.Select({
-  condition: ol.events.condition.pointerMove
-});
-
-if (select !== null) {
-  map.addInteraction(select);
-}
-
-function add_interaction() {
-  //console.log(123);
-  map.addInteraction(select);
-}
-
-//del_interaction
-function del_interaction() {
-  map.removeInteraction(select);
-}
 
 //---------------------------------------------
 $(function() {
