@@ -6,7 +6,7 @@ function loadVill() { //load data via ajax
   $("#village").append($("<option></option>").attr("value", "none").text("-"));
 
   if (loadvill_check == 0) {
-    var url_load = "https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/TW_Vill_simplified.geojson";
+    var url_load = "https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/vill_json_pretty.txt";
     $.ajax({
       url: url_load,
       dataType: "json",

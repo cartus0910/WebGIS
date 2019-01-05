@@ -17,7 +17,7 @@ var raster = new ol.layer.Tile({
 var vector = new ol.layer.Vector({
   renderMode: 'image',
   source: new ol.source.Vector({
-    url: 'https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/TW_Vill_simplified.geojson',
+    url: 'https://raw.githubusercontent.com/cartus0910/WebGIS/master/Final_Project/vill_json_pretty.txt',
     format: new ol.format.GeoJSON()
   }),
   style: new ol.style.Style({
