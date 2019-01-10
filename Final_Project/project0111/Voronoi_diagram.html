@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>ass5</title>
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css' integrity='sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO' crossorigin='anonymous'>
+  <script src='https://code.jquery.com/jquery-3.3.1.slim.min.js' integrity='sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo' crossorigin='anonymous'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js' integrity='sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49' crossorigin='anonymous'></script>
+  <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js' integrity='sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy' crossorigin='anonymous'></script>
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js" integrity="sha512-nMMmRyTVoLYqjP9hrbed9S+FzjZHW5gY1TWCHA5ckwXZBadntCNs8kEqAWdrb9O7rxbCaA4lKTIWjDXZxflOcA==" crossorigin=""></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+
+  <style>
+    #mapid {
+      height: 85vh;
+      width: 85%;
+      margin: 0 auto 0 auto;
+    }
+
+    #clear {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      margin-right: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <button class='btn btn-info' id='clear'>Clear</button>
+    <div id="mapid"></div>
+  </div>
+
+  <script>
+
+    //map init
+    var map, newMarker, markerLocation;
+      map = L.map('mapid').setView([25.014944, 121.538182], 18.7);
+
+      L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+      		maxZoom: 18,
+      		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      			'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      		id: 'mapbox.streets'
+      	}).addTo(map);
+
+    //----------------------------------------------------
+    // append point for bbox draw
+    var points = [];
+
+    //interactive marker
+    newMarkerGroup = new L.LayerGroup().addTo(map);
+    voronoi = new L.LayerGroup().addTo(map);
+
+    map.on('click', addMarker);
+
+    function addMarker(e) {
+      var newMarker = new L.marker(e.latlng);
+      //console.log(typeof(newMarker['_latlng']['lng']));
+
+      newMarker.addTo(newMarkerGroup);
+
+      //push point to draw voronoi
+      var point = turf.point([newMarker['_latlng']['lng'],newMarker['_latlng']['lat']]);
+      points.push(point);
+
+      var bbox = {bbox: [121, 24.5, 122.2, 25.35]};
+
+      if (points.length >= 2) {
+        console.log(points);
+
+        voronoi.clearLayers();
+        var collection = turf.featureCollection(points);
+        var voronoiPolygons = turf.voronoi(collection,bbox);
+
+        var voronoiLayer = L.geoJson(voronoiPolygons).addTo(voronoi);
+      };
+    }
+
+
+    $('#clear').click(function() {
+      newMarkerGroup.clearLayers();
+      voronoi.clearLayers();
+      points = [];
+    });
+
+    //----------------------------------------------------
+
+  </script>
+
+
+
+</body>
+
+</html>
