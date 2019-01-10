@@ -1,0 +1,3015 @@
+
+<html lang="zh-TW" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="keywords" content="死因地圖, 癌症地圖, 十大死因, 年齡標準化死亡率, 動畫, 十大死因, 空間聚集分析">
+	<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<title>台灣標準化死亡率地圖</title>
+	<link rel="canonical" href="http://mortality.geohealth.tw" />
+	<meta property="og:locale" content="zh_TW" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="台灣標準化死亡率地圖" />
+	<meta property="og:description" content="本研究開發各死因的網路互動式死亡率地圖，使用時空動態查詢的方式呈現不同年度各死因的死亡率分佈，並可透過死因地圖與統計圖間的互動瞭解各地區死亡率的全國排名、性別差異、年齡差異、時間趨勢、與十大死因，也可透過空間統計方法輔助找出疾病的空間聚集位置，使用者只許使用輕鬆地使用滑鼠就能完成死因地圖的時空演變。" />
+	<meta property="og:url" content="http://mortality.geohealth.tw" />
+	<meta property="og:image" content="http://mortality.geohealth.tw/web.png" />
+	<meta property="og:site_name" content="台灣標準化死亡率地圖" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<!--<link rel="stylesheet" href="http://openlayers.org/en/v3.8.2/css/ol.css" type="text/css">-->
+	<link rel="stylesheet" type="text/css" href="ol.css">
+	<link rel="stylesheet" type="text/css" href="jquery-easyui-1.4.3/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="jquery-easyui-1.4.3/themes/icon.css">
+	<script type="text/javascript" src="jquery-easyui-1.4.3/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery-easyui-1.4.3/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="jquery-1.3.2.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<!--<script src="http://openlayers.org/en/v3.8.2/build/ol.js"></script>-->
+	<script type="text/javascript" src="ol.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.2.min.js" type="text/javascript"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script src="https://code.highcharts.com/highcharts.src.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/offline-exporting.js"></script>
+	<script src="http://highcharts.github.io/export-csv/export-csv.js"></script>
+	<script src="http://code.highcharts.com/modules/export-data.js"></script>
+
+
+
+	<style>
+		#body {
+			text-align: center;
+			padding: 0px;
+			margin: 0px;
+			width: 100%;
+		}
+		#wrapper {
+			min-width: 1005px;
+			width: expression(document.body.clientWidth < 1005? "1005px": "auto" );
+			min-height: 630px;
+			height: expression(document.body.clientWidth < 630? "630px": "auto" );
+		}
+
+		.clearfix:before,
+		.clearfix:after {
+			content: " ";
+			display: table;
+		}
+
+		.clearfix:after {
+			clear: both;
+		}
+
+		.left {
+			float: left;
+		}
+
+		.right {
+			float: right;
+		}
+
+		.center {
+			position: absolute;
+			left: 0;
+			right: 0;
+			width: 100%;
+			text-align: center;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		#lmiLoadingGif{
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin: -170px 0 0 -170px;
+			height:340px;
+			width:340px;
+			background-size:cover;
+			z-index:10000;
+			opacity : 0.7;
+		}
+
+		#lmiloadingbg{
+			position:absolute;
+			width: 100%; height: 110%;
+			background-color: rgba(255, 255, 255, 0.7);
+			z-index:9999;
+		}
+
+		#lmiloading{
+			position:absolute;
+			top:35px;
+			width: 100%;
+			height: -webkit-calc(100% - 35px);
+			height: -moz-calc(100% - 35px);
+			height: calc(100% - 35px);
+			display:none;
+		}
+
+		#header {
+			position: relative;
+			width: 100%;
+			height: 35px;
+			background: rgba(179, 0, 0, 0.7);
+			border: none;
+		}
+
+		#sinica{
+			height:25px;
+			width:25px;
+			background-size:cover;
+			position:relative;
+			z-index:100;
+			display:inline-block;
+		}
+
+		#gis{
+			height:25px;
+			width:155px;
+			background-size:cover;
+			position:relative;
+			z-index:100;
+			display:inline-block;
+		}
+
+		#geo{
+			height:20px;
+			width:20px;
+			background-size:cover;
+			position:relative;
+			z-index:100;
+			padding: 0px;
+		}
+
+		.header-content {
+			line-height: 25px;
+			height: 25px;
+			padding: 5px;
+		}
+
+		#info{
+			height:25px;
+			width:25px;
+			background-size:cover;
+			position:relative;
+			z-index:100;
+			display:inline-block;
+		}
+		#eng{
+			height:26px;
+			width:26px;
+			background-size:cover;
+			position:relative;
+			z-index:100;
+			display:inline-block;
+			margin-left: 8px;
+		}
+		.pen {
+		  max-width: 200px;
+		  margin: 0 auto;
+		}
+		.pen img {
+		  margin-left: 0px;
+		}
+		.more-button {
+		  display: inline-block;
+		  padding: 0px 0px 0px 0;
+		  margin-left: 0px;
+		  overflow: hidden;
+		  top: 0px;
+		  right: 10px;
+		  width: 25px;
+		  -webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
+		  transition: all 0.3s ease-in-out;
+		  position: relative;
+		}
+		.more-button:before {
+		  content: url(share1.png);
+		  font-family: "more";
+		  display: inline-block;
+		  width: 25px;
+		  background: rgba(179, 0, 0, 0.7);
+		  cursor: pointer;
+		  color: rgba(179, 0, 0, 0.7);
+		}
+		.more-button:hover:before,
+		.more-button:active:before {
+		  -webkit-transition: all 0.3s ease-in-out;
+		  -moz-transition: all 0.3s ease-in-out;
+		  -ms-transition: all 0.3s ease-in-out;
+		  -o-transition: all 0.3s ease-in-out;
+		  transition: all 0.3s ease-in-out;
+		}
+		.more-button:hover,
+		.more-button:active {
+		  width: 250px;
+		}
+		.btcontainer {
+		  display: inline-block;
+		  opacity: 0;
+		  overflow: hidden;
+		  top: 0;
+		  left: 0;
+		  width: 250px;
+		  position: absolute;
+		  -webkit-transition: all 0.4s ease-in-out;
+		  -moz-transition: all 0.4s ease-in-out;
+		  -ms-transition: all 0.4s ease-in-out;
+		  -o-transition: all 0.4s ease-in-out;
+		  transition: all 0.4s ease-in-out;
+		}
+		.btcontainer .share-btn {
+		  padding: 5px;
+		}
+		.btcontainer .share-btn:hover,
+		.btcontainer .share-btn:active {
+		  text-shadow: 0 0 5px rgba(85, 190, 235, 0.45);
+		  color: #55beeb;
+		}
+		.more-button:hover > .btcontainer,
+		.more-button:active > .btcontainer {
+		  display: inline-block;
+		  left: 35px;
+		  position: absolute;
+		  opacity: 1;
+		  width: 250px;
+		  top: 0;
+		  -webkit-transition: all 0.4s ease-in-out;
+		  -moz-transition: all 0.4s ease-in-out;
+		  -ms-transition: all 0.4s ease-in-out;
+		  -o-transition: all 0.4s ease-in-out;
+		  transition: all 0.4s ease-in-out;
+		}
+
+		#controls-top {
+			position: relative;
+		}
+
+		.control-txt {
+			float: left;
+			font-size: 16px;
+			padding: .8em;
+			font-weight: bold;
+			padding-right: 0;
+		}
+
+		#LMI{
+			float: left;
+			margin: .8em;
+		}
+
+		#map_all{
+			position:absolute;
+			top:80px;
+			width: 100%;
+			height: -webkit-calc(100% - 80px);
+			height: -moz-calc(100% - 80px);
+			height: calc(100% - 80px);
+			min-width: 860px;
+			width: expression(document.body.clientWidth < 860? "860px": "auto" );
+			min-height: 546px;
+			height: expression(document.body.clientWidth < 546? "546px": "auto" );
+		}
+
+		#map{
+			position:relative;
+			width: 50%; height: 80%;
+		}
+
+		#sliderplaypausebg{
+			position:relative;
+			width: 50%;height: 12%;
+			top:68%;
+			background-color: rgba(255,255,255,0.70);
+		}
+
+		#slidertext{
+			position:absolute;
+			top:71%;
+			left:11%;
+			width: 38%;
+			z-index:200;
+		}
+
+		#slider{
+			position:relative;
+			top:74%;
+			left:11%;
+			width: 38%;
+			z-index:100;
+		}
+
+		#startyeartext{
+			position:absolute;
+			top:76%;
+			left:11%;
+			width: 38%;
+			z-index:100;
+		}
+
+		#endyeartext{
+			position:absolute;
+			top:76%;
+			right:50%;
+			width: 88px;
+			z-index:100;
+		}
+
+		.play{
+			position:absolute;
+			top:60%;
+			left:0px;
+			width:10%;
+			height:10vw;
+			opacity : 0.3;
+			background-image: url(playbutton2.png);
+			background-size:cover;
+			float:left;
+			z-index:120;
+		}
+
+		.pause{
+			position:absolute;
+			top:60%;
+			left:0px;
+			width:10%;
+			height:10vw;
+			opacity : 0.3;
+			background-image: url(pausebutton2.png);
+			background-size:cover;
+			float:left;
+			z-index:120;
+		}
+
+		#clear{
+			width:10%;
+			height:10vw;
+			background-image: url(resetbutton2.png);
+			background-size:cover;
+			opacity : 0.2;
+			position:absolute;
+			top:55%;
+			right:50%;
+			z-index:10;
+			display:none;
+		}
+
+		#nodata{
+			position:absolute;
+			top:10px;
+			right:51%;
+			z-index:1000;
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:25px;
+			text-align:center;
+			background-color: rgba(255,255,255,0.70);
+			color: rgba(0, 0, 0, 0.5);
+			padding:5px 10px 5px 10px;
+			display:none;
+		}
+
+		#lmiclear{
+			position:absolute;
+			top:72%;
+			left:15%;
+			display:none;
+			z-index:1000;
+		}
+
+		#basemap{
+			position:absolute;
+			top:80%;
+			right:50%;
+			z-index:100;
+		}
+
+		#charts1{
+			position:absolute;
+			top:80px;
+			width: 100%;
+			height: -webkit-calc(100% - 80px);
+			height: -moz-calc(100% - 80px);
+			height: calc(100% - 80px);
+			min-width: 860px;
+			width: expression(document.body.clientWidth < 860? "860px": "auto" );
+			min-height: 546px;
+			height: expression(document.body.clientWidth < 546? "546px": "auto" );
+		}
+
+		#currentYear{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:36px;
+			position:relative;
+			left:52%;
+			z-index:10;
+			color: rgba(179, 0, 0, 0.7);
+			z-index:100;
+		}
+
+		#citytown{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:36px;
+			position:relative;
+			left:52%;
+			z-index:10;
+			color: rgba(179, 0, 0, 0.7);
+			z-index:100;
+		}
+
+		#containertitle{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:18px;
+			position:relative;
+			left:52%;
+			right:0%;
+			width:250px;
+			color: rgba(0, 0, 0, 0.5);
+			z-index:100;
+		}
+
+		#container{
+			position:relative;
+			left:52%;
+			z-index:100;
+		}
+
+		#container5title{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:18px;
+			position:relative;
+			left:52%;
+			width:250px;
+			color: rgba(0, 0, 0, 0.5);
+			z-index:100;
+		}
+
+		#container5{
+			position:relative;
+			left:52%;
+			z-index:100;
+		}
+
+		#container2title{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:18px;
+			position:relative;
+			left:52%;
+			width:250px;
+			color: rgba(0, 0, 0, 0.5);
+			display:none;
+			z-index:100;
+		}
+
+		#container2{
+			position:relative;
+			left:52%;
+			display:none;
+			z-index:100;
+		}
+
+		#container3title{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:18px;
+			position:relative;
+			left:52%;
+			width:250px;
+			color: rgba(0, 0, 0, 0.5);
+			display:none;
+			z-index:100;
+		}
+
+		#container3{
+			position:relative;
+			left:52%;
+			display:none;
+			z-index:100;
+		}
+
+		#container4title{
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:18px;
+			position:relative;
+			left:52%;
+			width:250px;
+			color: rgba(0, 0, 0, 0.5);
+			display:none;
+			z-index:100;
+		}
+
+		#container4{
+			position:relative;
+			left:52%;
+			display:none;
+			z-index:100;
+		}
+
+		#button1 {
+			width: 100px;
+			height: 50px;
+			float: left;
+			margin-right: 3px;
+			background-color: white;
+			color: black;
+			border: 2px solid #e7e7e7;
+			text-align: center;
+			position:absolute;
+			top:92%;
+			left:52%;
+			z-index:100;
+			display:none;
+			margin:0px;
+		}
+		#button2 {
+			width: 100px;
+			height: 50px;
+			float: left;
+			background-color: white;
+			color: black;
+			border: 2px solid #e7e7e7;
+			text-align: center;
+			position:absolute;
+			top:92%;
+			left:75%;
+			z-index:100;
+			display:none;
+			margin:0px;
+		}
+		#button1:hover {
+			background-color: #e7e7e7;
+		}
+		#button2:hover {
+			background-color: #e7e7e7;
+		}
+		#button1.selected, #button2.selected {
+			background-color: rgba(179, 0, 0, 0.7);
+			color: white;
+			border: none;
+			text-align: center;
+		}
+		.button {
+			padding: 16px 32px;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			-webkit-transition-duration: 0.4s; /* Safari */
+			transition-duration: 0.4s;
+			cursor: pointer;
+		}
+
+		.my-legend{
+			position:relative;
+			top:70%;
+			left:-48%;
+			z-index:100;
+		}
+
+		.my-legend .legend-title {
+			text-align: left;
+			margin-bottom: 5px;
+			font-weight: bold;
+			font-size: 90%;
+			font-family:Microsoft JhengHei,Arial;
+			color: rgba(0, 0, 0, 0.7);
+			z-index:100;
+		}
+
+		.my-legend .legend-scale ul li {
+			display: block;
+			float: left;
+			width: 8%;
+			margin-bottom: 6px;
+			text-align: center;
+			font-size: 60%;
+			list-style: none;
+			z-index:100;
+		}
+		.my-legend ul.legend-labels li span {
+			display: block;
+			float: left;
+			height: 15px;
+			width: 100%;
+			z-index:100;
+		}
+
+		.white_content {
+			display: none;
+			position: relative;
+			top: 20px;
+			left: 20%;
+			width: 60%;
+			height: 60%;
+			padding: 16px;
+			border: 3px solid rgba(0, 0, 0, 0.5);
+			background-color: white;
+			z-index:1002;
+			overflow: auto;
+		}
+
+		#counter1{
+			z-index:1002;
+		}
+
+		#counter2{
+			z-index:1002;
+		}
+
+		#citybox {
+			background-color: rgba(179, 0, 0, 0.7);
+			cursor: pointer;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			padding-left: 20px;
+			padding-right: 20px;
+			text-align: center;
+			font-family:Microsoft JhengHei,Arial;
+			font-weight:bold;
+			font-size:20px;
+			color: white;
+			z-index:5;
+		}
+		#citybox:hover {
+			background-color: rgba(84,39,143, 0.5);
+		}
+		#citybox:active {
+			background-color: rgba(84,39,143, 0.7);
+		}
+
+		@media all and (max-height: 769px) {
+			#best{
+				position:absolute;
+				width: 100%;
+				font-family:Microsoft JhengHei,Arial;
+				text-align:right;
+				top:100%;
+				z-index:3;
+			}
+		}
+
+		@media all and (min-height: 770px){
+			#best{
+				position:absolute;
+				width: 100%;
+				font-family:Microsoft JhengHei,Arial;
+				text-align:right;
+				top:98%;
+				z-index:3;
+			}
+		}
+	</style>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-73163402-1', 'auto');
+	  ga('require', 'linkid');
+	  ga('send', 'pageview');
+	</script>
+</head>
+<body>
+<div id="wrapper">
+	<div id="lmiloading">
+		<div id="lmiloadingbg"></div>
+		<img id="lmiLoadingGif" src="loading.gif"></img>
+		<br>  <br>
+	</div>
+	<div id="header" class="header">
+		<div id="header-content" class="header-content clearfix">
+			<a href="http://www.sinica.edu.tw/index.shtml" class="left"><img src="sinica_logo.png" id="sinica" border="0" title="中央研究院"></a>
+			<a href="http://gis.rchss.sinica.edu.tw/" class="left"><img src="gislogo.png" id="gis" border="0" title="地理資訊科學研究專題中心"></a>
+			<div id="header-content-center" class="center" style="font-size: 25px; font-family:Microsoft JhengHei,Arial;">台灣標準化死亡率地圖</div>
+			<a href="http://me.geohealth.tw/" class="right"><img src="eng.png" id="eng" border="0" title="English Version"></a>
+			<a class="right" href = "javascript:void(0)" onclick = "document.getElementById('info_txt').style.display='block'"><img src="info.png" id="info" border="0" title="Information"></a>
+
+			<section class="pen right">
+				<div class="more-button" title="分享">
+					<div class="btcontainer">
+						<a href="javascript: void(window.open('http://twitter.com/home/?status=mortality.geohealth.tw/', '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'));" class="share-btn icon-twitter"><img src="twitter.png" id="twitter" border="0" title="在twitter分享" style="height:25px;width:25px;background-size:cover;"></a>
+						<a href="javascript: void(window.open('http://www.facebook.com/sharer/sharer.php?u=mortality.geohealth.tw', '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600'));"><img src="facebook.png" id="facebook" border="0" title="在facebook分享" style="height:25px;width:25px;background-size:cover;"></a>
+						<a href="javascript: void(window.open('https://plus.google.com/share?url=mortality.geohealth.tw', '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'));"  class="share-btn icon-google-plus-sign"><img src="googleplus.png" id="googleplus" border="0" title="在googleplus分享" style="height:25px;width:25px;background-size:cover;"></a>
+						<a href="http://line.naver.jp/R/msg/text/?%E5%8F%B0%E7%81%A3%E5%82%B3%E6%9F%93%E7%97%85%E6%A8%99%E6%BA%96%E5%8C%96%E7%99%BC%E7%94%9F%E7%8E%87%E5%9C%B0%E5%9C%96%0D%0Ahttp%3A%2F%2Fmortality.geohealth.tw%2F"  class="share-btn icon-github-alt"><img src="line.png" id="line" border="0" title="在line分享" style="height:25px;width:25px;background-size:cover;"></a>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	<div id="controls-top">
+			<div class="control-txt" style="display: inline-block;">疾病：</div>
+			<div id="control" class="control-txt" style="display: inline-block;"></div>
+			<div class="control-txt" style="display: inline-block;">地區：</div>
+			<div id="control2" class="control-txt" style="display: inline-block;"></div>
+			<div class="control-txt" style="display: inline-block;" class="control-txt">性別：</div>
+			<div id="control3" style="display: inline-block;" class="control-txt"></div>
+			<button type="button" id="LMI" style="display: inline-block;">空間統計</button>
+	</div>
+	<div id="charts1">
+		<div id="currentYear" style="display: inline-block;"></div>
+		<div id="citytown" style="display: inline-block;"></div>
+		<div id="containertitle">鄉鎮市區排名</div>
+		<div id="container" style="height: 25%;width:45%" ></div>
+		<div id="container2title">性別比較</div>
+		<div id="container2" style="height: 22%;width:45%" ></div>
+		<div id="container3title">時間趨勢</div>
+		<div id="container3" style="height: 20%;width:45%" ></div>
+		<div id="container4title">十大死因</div>
+		<div id="container4" style="height: 65%; width:45%" ></div>
+		<div id="container5title">全國時間趨勢圖</div>
+		<div id="container5" style="height: 25%; width:45%" ></div>
+		<div id="button1" onclick="toggle(this,'button2')" class="selected" style="height: 25;width:23%;cursor:hand;">其他統計圖</div>
+		<div id="button2" onclick="toggle(this,'button1')" style="height: 25;width:23%;cursor:hand;">十大死因</div>
+		<div id="best" class="attribution"><a class="attribution" href="https://youtu.be/0u-lhOD7nvo">新手上路</a>
+		<b> ‧ 聯繫我們</b>  信箱：carol3849@gate.sinica.edu.tw  電話：(02)2785-7108 Ext.108</div>
+	</div>
+	<div id="map_all">
+		<div id="map" class="left"></div>
+		<div id="slidertext">時間軸</div>
+		<div id="slider"></div>
+		<div id="startyeartext"></div>
+		<div id="endyeartext"></div>
+		<div id="sliderplaypausebg"></div>
+		<div id="nodata">無資料<br />請選擇其他年度</div>
+		<div id="lmiclear" style="font-family:Microsoft JhengHei,Arial;font-weight:bold;font-size:25px;margin-top:0px;color:rgba(150, 129, 178,1);cursor:hand;">回到標準化死亡率地圖</div>
+		<div class='my-legend' id="legend1">
+			<div class='legend-title' >人/每十萬人</div>
+			<div class='legend-scale'>
+				<ul class='legend-labels'>
+					<li id="lv1"><span style='background:rgba(179, 0, 0, 0.7);'></span><h>>80%</h></li>
+					<li id="lv2"><span style='background:rgba(227, 74, 51, 0.7);'></span><h>60%~80%</h></li>
+					<li id="lv3"><span style='background:rgba(252, 141, 89, 0.7);'></span><h>40%~60%</h></li>
+					<li id="lv4"><span style='background:rgba(253, 187, 132, 0.7);'></span><h>20%~40%</h></li>
+					<li id="lv5"><span style='background:rgba(253, 212, 158, 0.7);'></span><h><20%~0%</h></li>
+					<li id="lv6"><span style='background:rgba(242,240,247, 0.7);'></span><h>0</h></li>
+				</ul>
+			</div>
+			<a href="javascript: void(window.open('http://mc.geohealth.tw/'));"><div id="citybox" style="display: inline-block;">前往縣市層級地圖</div></a>
+			<div id="counter1" style="display: inline-block;"><label style="font-family:Microsoft JhengHei,Arial;
+					font-size:20px;color: rgba(179, 0, 0, 0.7);">瀏覽人數：</label></div>
+			<div id="counter2" style="display: inline-block;"><script type="text/javascript" src="http://services.webestools.com/cpt_visitors/35473-8-9.js"></script></div>
+		</div>
+		<div class='my-legend' id="legend2" style="display:none">
+			<div class='legend-title' >Local Moran's I ( z-score )</div>
+			<div class='legend-scale'>
+				<ul class='legend-labels'>
+					<li id="lv7"><span style='background:rgba(84,39,143, 0.8);'></span><h>高度聚集<br />>6.8<br />p-value<0.05</h></li>
+					<li id="lv8"><span style='background:rgba(117,107,177, 0.8);'></span><h>高度聚集<br />5.1~6.8<br />p-value<0.05</h></li>
+					<li id="lv9"><span style='background:rgba(158,154,200, 0.8);'></span><h>高度聚集<br />3.4~5.1<br />p-value<0.05</h></li>
+					<li id="lv10"><span style='background:rgba(188,189,220, 0.8);'></span><h>中度聚集<br />1.7~3.4<br />p-value<0.05</h></li>
+					<li id="lv11"><span style='background:rgba(218,218,235, 0.8);'></span><h>低度聚集<br />0~1.7<br />p-value<0.05</h></li>
+					<li id="lv12"><span style='background:rgba(242,240,247, 0.8);'></span><h>不顯著<br />otherwise<br />p-value>0.05</h></li>
+				</ul>
+			</div>
+			<div id="counter1" style="display: inline-block;"><label style="font-family:Microsoft JhengHei,Arial;
+					font-size:20px;color: rgba(179, 0, 0, 0.7);">瀏覽人數：</label></div>
+			<div id="counter2" style="display: inline-block;"><script type="text/javascript" src="http://services.webestools.com/cpt_visitors/35473-8-9.js"></script></div>
+		</div>
+		<div id="playpause" class="play"></div>
+		<div id="clear"></div>
+		<select name="basemap" id="basemap"></select>
+	</div>
+	<div id="info_txt" class="white_content">
+		<a href = "javascript:void(0)" onclick = "document.getElementById('info_txt').style.display='none'" class="right";>關閉視窗</a>
+		<br />
+		<h2>經費來源</h2>
+		<p>
+			中央研究院-健康雲跨領域研究:巨量健康資訊科技之研發與應用
+			<br /><br />
+		</p>
+		<h2>計畫總主持人</h2>
+		<p>
+			王惠鈞副院長, 王汎森副院長
+			<br /><br />
+		</p>
+		<h2>子計畫主持人</h2>
+		<p>
+			范毅軍執行長（GIS中心）
+			<br /><br />
+		</p>
+		<h2>子計畫共同主持人</h2>
+		<p>
+			廖培珊副研究員（調研中心）, 詹大千副研究員（GIS中心）
+			<br /><br />
+		</p>
+		<h2>作者</h2>
+		<p>
+			<img src='chan.jpg' width="50"/> 詹大千
+			<img src='teng.jpg' width="50"/> 鄧詠竹
+			<img src='kuo.jpg' width="50"/> 郭巧玲
+			<img src='chen.jpg' width="50"/> 陳建州
+			<img src='Lin.jpg' width="50"/> 林柏丞
+			<img src='kao.jpg' width="50"/> 高瑞鴻
+			<img src='yeh.jpg' width="50"/> 葉耀鮮
+			<img src='yao.jpg' width="50"/> 陳柏堯
+			<br /><br />
+		</p>
+		<h2>版權與資料來源</h2>
+		<p>
+			<label>Map data © </label>
+			<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a><label class="attribution"> contributors.</label>
+			<label class="attribution"> Charts © </label>
+			<a class="attribution" href="http://www.highcharts.com/">Highcharts</a><label class="attribution">, </label>
+			<a class="attribution" href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a><label>.</label>
+			<label class="attribution">Infectious diseases data © </label><a class="attribution" href="http://data.gov.tw/wise_search?kw=%E5%9C%B0%E5%8D%80%E5%B9%B4%E9%BD%A1%E6%80%A7%E5%88%A5%E7%B5%B1%E8%A8%88%E8%A1%A8">DATA.GOV.TW</a><label>.</label><br />
+			人口資料來源:<br />
+			1991-2000: 中華民國臺閩地區人口統計，數化資料來自: 統計博覽繪<br />
+			2001-2005: 中華民國臺閩地區人口統計，數化資料來自: 中華民國臺閩地區人口統計光碟<br />
+			2006-2007: 中華民國人口統計年刊，數化資料來自:中華民國人口統計年刊光碟<br />
+			2008-2017: 數化資料來自: 內政部社會經濟資料庫<br /><!--手動調整(更新)-->
+			<br />
+			標準人口為<a class="attribution" href="http://seer.cancer.gov/stdpopulations/world.who.html">WHO2000年世界人口</a><br />
+			<br />
+		</p>
+		<h2>說明</h2>
+		<p>
+			<ul>
+				<li>標準化死亡率（Standardized Incidence Rate）：屬於直接標準化，本地圖採用年齡標準化死亡率，在比較兩地死亡率時，可剔除年齡結構影響。計算方式如下：
+					<ol>
+						<li>						首先計算每個年齡層的死亡率：在各年度、性別、鄉鎮地區層級、傳染病下，人口與疾病資料皆有18個年齡層（0–4歲、5–9歲、10–14歲、…、80–84歲、及85歲以上），計算每個年齡層傳染病的粗死亡率（該年齡層得病人數 / 該年齡層人口數）。</li>
+						<li>
+						接著再將各個年齡層的粗死亡率，乘上<a class="attribution" href="http://seer.cancer.gov/stdpopulations/world.who.html">2000年世界標準人口</a>的各個年齡層人口比率（表三中的「權重」欄位），即為各個年齡層的標準化死亡率，最後將其加總並乘以100,000，得到各年度、性別、鄉鎮地區層級、傳染病下的年齡標準化死亡率。</li>
+					</ol>
+				</li>
+				<br />
+				<li>Local Moran's I：衡量個別地區與其鄰近地區死亡率的大小相關程度，其值為正，代表正相關。Local Moran’s I（ <img src='LMI1.png' height="21" border="0"/> ） 的計算公式如下：
+				<br />
+				<img src='LMI2.png' height="48" border="0"/>,
+				<br />
+				<img src='LMI3.png' height="36" border="0"/>
+				<br />
+				其中，<img src='LMI1.png' height="21" border="0"/>為各鄉鎮地區死亡率的Local Moran’s I；<img src='LMI4.png' height="21" border="0"/>為第i鄉鎮的標準化死亡率；<img src='LMI5.png' height="21" border="0"/>為各鄉鎮標準化死亡率的平均值；<img src='LMI6.png' height="21" border="0"/>表示第 i 與 j 鄉鎮間的空間權重；n表示鄉鎮地區數目。
+				<br />
+				Local Moran’s I的顯著性檢定是將 I統計量標準化成Z分數，再利用Z值大小來進行顯著性檢定，其公式如下：
+				<br />
+				<img src='LMI7.png' height="41" border="0"/>
+				<br />
+				其中<img src='LMI8.png' height="21" border="0"/>為期望值，<img src='LMI9.png' height="21" border="0"/>為變異數，且
+				<br />
+				<img src='LMI10.png' height="36" border="0"/>
+				<br />
+				<img src='LMI11.png' height="23" border="0"/>
+				<br /><br />
+				<p style="font-size:10px">參考文獻：Chan TC, King CC. Surveillance and Epidemiology of Infectious Diseases Using Spatial and Temporal Clustering Methods. In: Castillo-Chavez C, Chen H, Lober WB, Thurmond M, Zeng D, eds. Infectious Disease Informatics and Biosurveillance: Research, Systems and Case Studies. U.S.A.: Springer; 2010; 208-234.</p>
+				</li>
+			</ul>
+			<br />
+		</p>
+		<h2>引用網站方式</h2>
+		<p>
+			詹大千,鄧詠竹,郭巧玲,陳建州,林柏丞,高瑞鴻,葉耀鮮,陳柏堯. (2016). [online] 台灣標準化死亡率地圖. Available at: http://mortality.geohealth.tw/ [Accessed Date].
+			<br /><br /><br />
+			<a href = "javascript:void(0)" onclick = "document.getElementById('info_txt').style.display='none'">關閉視窗</a>
+		</p>
+	</div>
+</div>
+
+	<script>
+
+		var item=null;
+		var item0=null;
+		var item2=null;
+		var item3=null;
+		var item4=null;
+		var startyear=1991;  //手動調整
+		var endyear=2017;  //手動調整(更新)
+		var barYear=endyear;
+		var cYear;
+		var select1;        //diseaseSelect
+		var select2;        //countySelect
+		var select3;        //townSelect
+		var selectDis;
+		var selectDisCode=1001;
+		var selectCounty="";
+		var selectCountyD="";
+		var selectTown="";
+		var selectTownCode="";
+
+		var diseaseGroup=1;
+		var yearGroup=2;
+		var map;
+		var vSource1,vSource2,vSource3;
+		var vectorLayer1,vectorLayer2,vectorLayer3;
+		var currentLayer;       //目前使用圖層
+		var mdata=null;
+		var lmidata=null;
+		var features;
+		var select4nodisdata;
+
+		var toggle = function (e, old) {
+			e.className = "selected";
+			document.getElementById(old).className="";
+		};
+
+		$.ajax({
+			url: 'cause_name_death_cancer_db.json', //手動調整
+			dataType: 'json',
+			success: function(_data) {
+				item=_data;
+				loadSelect();
+				run();
+			}
+		});
+
+		$('#startyeartext').empty().append(startyear).append("年").append("<br />");
+		$('#endyeartext').empty().append(endyear).append("年").append("<br />");
+
+		var projection = ol.proj.get('EPSG:3857');
+		var projectionExtent = projection.getExtent();
+		var size = ol.extent.getWidth(projectionExtent) / 256;
+		// Generate and array of resolutions and matrixIds for this WMTS
+		var resolutions = new Array(14);
+		var matrixIds = new Array(14);
+		for (var z = 0; z < 14; ++z) {
+			resolutions[z] = size / Math.pow(2, z);
+			matrixIds[z] = z;
+		}
+
+		var EMAP=  new ol.layer.Tile({
+			extent: projectionExtent,
+			source: new ol.source.WMTS({
+				url: 'http://wmts.nlsc.gov.tw/wmts?',
+				layer: 'EMAP',
+				matrixSet: 'GoogleMapsCompatible',
+				format: 'image/jpeg',
+				projection: projection,
+				tileGrid: new ol.tilegrid.WMTS({
+					origin: ol.extent.getTopLeft(projectionExtent),
+					resolutions: resolutions,
+					matrixIds: matrixIds
+				}),
+				extent: projectionExtent,
+				style: 'default'
+			})
+		})
+
+		var TGOS=  new ol.layer.Tile({
+			extent: projectionExtent,
+			source: new ol.source.XYZ({
+				url: 'http://gis.sinica.edu.tw/tgos/file-exists.php?img=TGOSMAP_W-png-{z}-{x}-{y}',
+				layer: 'TGOS',
+				matrixSet: 'GoogleMapsCompatible',
+				format: 'image/jpeg',
+				projection: projection,
+				tileGrid: new ol.tilegrid.WMTS({
+					origin: ol.extent.getTopLeft(projectionExtent),
+					resolutions: resolutions,
+					matrixIds: matrixIds
+				}),
+				extent: projectionExtent,
+				style: 'default'
+			})
+		})
+
+		iniMap();   //地圖初始化
+
+		function iniMap(){
+			vSource3 = new ol.source.Vector({
+				url: '100_103_mapcode.geojson',
+				format: new ol.format.GeoJSON()
+			});
+			vectorLayer3 = new ol.layer.Vector({
+				source: vSource3,
+			});
+			vSource1 = new ol.source.Vector({
+				url: '80_92_mapcode.geojson',
+				format: new ol.format.GeoJSON()
+			});
+			vectorLayer1 = new ol.layer.Vector({
+				source: vSource1,
+			});
+			vSource2 = new ol.source.Vector({
+				url: '93_99_mapcode.geojson',
+				format: new ol.format.GeoJSON()
+			});
+			vectorLayer2 = new ol.layer.Vector({
+				source: vSource2,
+			});
+			featureOverlay = new ol.layer.Vector({						//add a new overlay features layer
+				source: new ol.source.Vector()
+			});
+			currentLayer=vectorLayer1;
+			map = new ol.Map({
+				layers: [
+					new ol.layer.Tile({
+						source: new ol.source.OSM()
+					}),
+					EMAP,TGOS,vectorLayer3,vectorLayer2,vectorLayer1,featureOverlay
+				],
+				target: 'map',
+				controls: ol.control.defaults({
+					attributionOptions: /* @type {olx.control.AttributionOptions} */ ({
+						collapsible: false
+					})
+				}),
+				view: new ol.View({
+					center: ol.proj.transform([121, 23.8], 'EPSG:4326', 'EPSG:3857'),
+					zoom: 7
+				})
+			});
+			EMAP.setVisible(false);
+			TGOS.setVisible(false);
+			vectorLayer1.setVisible(true);
+			vectorLayer2.setVisible(true);
+			vectorLayer3.setVisible(true);
+			featureOverlay.setVisible(true);
+		}
+
+		function loadSelect(){
+			select1=$("<select id='diseaseSelect'/>").on('change',function(){
+				selectDis=$("#diseaseSelect :selected").text();
+				selectDisCode=$("#diseaseSelect :selected").val();
+				run();
+				allupdate();
+				$("#nodata").css("display","none");
+			});
+
+			select2=$("<select id='countySelect'/>").on('change',function(){
+				selectCounty=$("#countySelect :selected").text();
+				update3(yearGroup);
+				run();
+				allupdate();
+			});
+
+			select3=$("<select id='townSelect' style='width:90px;'/>").on('change',function(){
+				selectTown=$("#townSelect :selected").val();
+				selectTownCode=$("#townSelect :selected").attr("mapcode");
+				run();
+				allupdate();
+			});
+
+			select4=$("<select id='genderSelect'/>").append("<option value='0'>不分性別</option>")
+				.append("<option value='1'>男性</option>")
+				.append("<option value='2'>女性</option>")
+				.on('change',function(){
+					selectSex=$("#genderSelect :selected").val();
+					run();
+					allupdate();
+			});
+			$('#control').empty().append(select1);
+			$('#control2').empty().append(select2).append(select3);
+			$('#control3').empty().append(select4);
+			update1(diseaseGroup);         	    //載入diseaseSelect
+			update2(yearGroup);   //載入county, 預設selectedIdx=2, 第三區間年
+			update3(yearGroup);   //載入town
+
+		}
+
+
+		function update1(diseaseGroup){
+			var s1=diseaseGroup;
+			$(select1).empty();
+			for(var key1 in item[s1].item){
+				var g1=$("<optgroup />")
+					.attr('label',item[s1].item[key1].title)
+					.attr('id',item[s1].item[key1].title);
+				var keyValue;
+				for(var key2 in item[s1].item[key1].item){
+					$(g1).append(
+						$("<option />")
+							.html(item[s1].item[key1].item[key2].cause_name)
+							.attr('value',item[s1].item[key1].item[key2].cause)
+					);
+				}
+				$(select1).append($(g1));
+			}
+		}
+
+		function update2(yearGroup){
+			var s1=yearGroup;
+			$.ajax({
+				type: "POST",
+				async: false,
+				dataType: "json",
+				url: 'forCountrySelect.php',
+				data: {
+					js: s1,
+				},
+				success: function (_data) {
+					item2=_data;
+					$(select2).empty();
+					for(var key1 in item2){
+						opt=$("<option />")
+							.html(item2[key1].City)
+							.attr('value',item2[key1].COUN_ID);
+						$(select2).append(
+							$(opt)
+						);
+					}
+					update3(yearGroup);
+				}
+			});
+		}
+
+		function update3(yearGroup){  //根據selectedIdx=0,county, 載入town
+			var s1=yearGroup;
+			selectCounty=$("#countySelect :selected").text();
+			$.ajax({
+				type: "POST",
+				async: false,
+				dataType: "json",
+				url: 'fortownSelect.php',
+				data: {
+					js: s1,
+					jcon: selectCounty
+				},
+				success: function (_data) {
+					item3=_data;
+					$(select3).empty();                   //清空
+					for(var key1 in item3){
+						$(select3).append(
+							$("<option />")
+								.html(item3[key1].District)
+								.attr('mapcode',
+									(typeof(item3[key1].mapcode)!=='undefined ')
+								? item3[key1].mapcode
+								: item3[key1].District
+								)
+						);
+					}
+					$("#townSelect option[mapcode='"+selectTownCode+"']").prop('selected', true);
+
+				}
+			});
+		}
+
+		function mortality_color(tfeatures,drawdata){
+			var md=[];
+			for(var i=0;i<drawdata.length;i++){
+				md.push(Number(drawdata[i].mortality));
+			}
+			md.sort(function(a,b){return b - a;});  //由大到小排列
+			var max=md[0];
+			var l1=max*0.2;
+			var l2=max*0.4;
+			var l3=max*0.6;
+			var l4=max*0.8;
+			for (var j = 0; j < tfeatures.length; j++) {
+				var feature=tfeatures[j];
+				style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+				feature.setStyle(style);
+				for (var i = 0; i < drawdata.length; i++) {
+					if(feature.get("mapcode")==drawdata[i].mapcode){
+						if(drawdata[i].mortality>l4){
+							var style=new ol.style.Style({fill:new ol.style.Fill({color: [179, 0, 0, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}else if(drawdata[i].mortality<=l4 && drawdata[i].mortality>l3){
+							style=new ol.style.Style({fill:new ol.style.Fill({color: [227, 74, 51, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}else if(drawdata[i].mortality<=l3 && drawdata[i].mortality>l2){
+							style=new ol.style.Style({fill:new ol.style.Fill({color: [252, 141, 89, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}else if(drawdata[i].mortality<=l2 && drawdata[i].mortality>l1){
+							style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 187, 132, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}else if(drawdata[i].mortality<=l1 && drawdata[i].mortality>0){
+							style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 212, 158, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}else{
+							style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+							feature.setStyle(style);
+						}
+					}
+				}
+			}
+		}
+
+		function mortality_town_color(tfeatures,drawdata){
+			var md=[];
+			for(var i=0;i<drawdata.length;i++){
+				md.push(Number(drawdata[i].mortality));
+			}
+			md.sort(function(a,b){return b - a;});  //由大到小排列
+			var max=md[0];
+			var l1=max*0.2;
+			var l2=max*0.4;
+			var l3=max*0.6;
+			var l4=max*0.8;
+			for (var j = 0; j < tfeatures.length; j++) {
+				var feature=tfeatures[j];
+				style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+				feature.setStyle(style);
+				for (var i = 0; i < drawdata.length; i++) {
+					if(feature.get("mapcode")==drawdata[i].mapcode){
+						if(drawdata[i].mortality>l4){
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [179, 0, 0, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [179, 0, 0, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}else if(drawdata[i].mortality<=l4 && drawdata[i].mortality>l3){
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [227, 74, 51, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [227, 74, 51, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}else if(drawdata[i].mortality<=l3 && drawdata[i].mortality>l2){
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [252, 141, 89, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [252, 141, 89, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}else if(drawdata[i].mortality<=l2 && drawdata[i].mortality>l1){
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 187, 132, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 187, 132, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}else if(drawdata[i].mortality<=l1 && drawdata[i].mortality>0){
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 212, 158, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [253, 212, 158, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}else{
+							if(feature.get("mapcode")==selectTownCode){
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: '#7cb5ec',width: 3})});
+								feature.setStyle(style);
+							}else{
+								var style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+								feature.setStyle(style);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		function run(){
+			getbasedata(barYear);
+			if(mdata==null ||  features ==null || features.length==0){
+				setTimeout(function(){
+					run();
+				},1000);
+			}else{
+				drawMap();
+			}
+		}
+
+		function getbasedata(iYear){
+			if(iYear<=2003){
+				features = vSource1.getFeatures();
+			}
+			else if(iYear>=2011){
+				features = vSource3.getFeatures();
+			}
+			else{
+				features = vSource2.getFeatures();
+			}
+			if(features.length==0)
+				return ;
+			if(iYear>=1991 && iYear<=2003 && currentLayer!=vectorLayer1){
+				vectorLayer2.setVisible(false);
+				vectorLayer3.setVisible(false);
+				currentLayer=vectorLayer1;
+				vectorLayer1.setVisible(true);
+			}
+			if(iYear>=2004 && iYear<=2010 && currentLayer!=vectorLayer2){
+				vectorLayer1.setVisible(false);
+				vectorLayer3.setVisible(false);
+				currentLayer=vectorLayer2;
+				vectorLayer2.setVisible(true);
+			}
+			if(iYear>=2011 && currentLayer!=vectorLayer3){
+				vectorLayer1.setVisible(false);
+				vectorLayer2.setVisible(false);
+				currentLayer=vectorLayer3;
+				vectorLayer3.setVisible(true);
+			}
+			mdata=getDrawData("all2");
+			return mdata;
+		}
+
+
+		function getDrawData(mode){
+			var cal=[];
+			selectDisCode=$("#diseaseSelect :selected").val();
+			selectCounty=$("#countySelect :selected").text();
+			selectCountyCode=$("#countySelect :selected").val();
+			if(selectCounty !== "全國"){
+				selectTownCode=$("#townSelect :selected").attr("mapcode");
+			}else{
+				selectTown='';
+				selectTownCode='';
+			}
+			selectTown=$("#townSelect :selected").val();
+			selectSex=$("#genderSelect :selected").val();
+			var selecttype;
+			if(selectDisCode<2000){
+				selecttype=0;
+			}else{
+				selecttype=1;
+			}
+			$.ajax({
+				type: "POST",
+				async: false,
+				dataType: "json",
+				url: 'sqlserver.php',
+				data: {
+					jyear: barYear-1911,
+					jtype: selecttype,
+					jdis: selectDisCode,
+					jcon: selectCountyCode,
+					jtow: selectTownCode,
+					jsex: selectSex,
+					jmode: mode
+				},
+				success: function(_data){
+					cal=_data;
+				}
+			});
+			return cal;
+		}
+
+		function drawMap(){
+			if(selectCounty !== "全國"){
+				mortality_town_color(features,mdata);
+				selectTown=$("#townSelect :selected").val();
+			}else{
+				mortality_color(features,mdata);
+			}
+			$('#citytown')
+				.empty()
+				.append(selectCounty).append(selectTown).append("<br />");
+			$('#containertitle')
+				.empty()
+				.append("鄉鎮市區排名");
+			$('#currentYear')
+			.empty()
+			.append(barYear).append("年").append("<br />");
+
+			column_chart(mdata,features);
+			var drawdataLine2=getDrawData("timeall");
+			line_chart2(drawdataLine2);
+			mouse_fun(mdata);
+		}
+
+		function allupdate(){
+			if(selectCounty !== "全國"){
+				selectTown=$("#townSelect :selected").val();
+				drawGenderFigure();
+				drawLineFigure();
+				drawdisFigure();
+				if ($("#button1").attr("class") == "selected"){
+					$("#containertitle").css("display","block");
+					$("#container").css("display","block");
+					$("#container5title").css("display","none");
+					$("#container5").css("display","none");
+					$("#container2title").css("display","block");
+					$("#container2").css("display","block");
+					$("#container3title").css("display","block");
+					$("#container3").css("display","block");
+					$("#container4title").css("display","none");
+					$("#container4").css("display","none");
+				}else if ($("#button2").attr("class") == "selected"){
+					$("#containertitle").css("display","none");
+					$("#container").css("display","none");
+					$("#container5title").css("display","none");
+					$("#container5").css("display","none");
+					$("#container2title").css("display","none");
+					$("#container2").css("display","none");
+					$("#container3title").css("display","none");
+					$("#container3").css("display","none");
+					$("#container4title").css("display","block");
+					$("#container4").css("display","block");
+				}
+
+				$("#button1").css("display","block");
+				$("#button2").css("display","block");
+				$("#LMI").css("display","none");
+				var selectct=$("#townSelect :selected").attr("mapcode");
+				var features=currentLayer.getSource().getFeatures();
+				for (var i = 0;i<features.length;i++) {
+					if(features[i].get("mapcode")==selectct){
+						var Extent = features[i].getGeometry().getExtent();
+						map.getView().fit(Extent, map.getSize());
+						$("#clear").css("display","block");
+					}
+				}
+				$(map.getViewport()).unbind('mousemove');
+			}else{
+				$("#clear").css("display","none");
+				$("#containertitle").css("display","block");
+				$("#container").css("display","block");
+				$("#container5title").css("display","block");
+				$("#container5").css("display","block");
+				$("#container2title").css("display","none");
+				$("#container2").css("display","none");
+				$("#container3title").css("display","none");
+				$("#container3").css("display","none");
+				$("#container4title").css("display","none");
+				$("#container4").css("display","none");
+				$("#button1").css("display","none");
+				$("#button2").css("display","none");
+				$("#countySelect option[value='0']").prop('selected', true);
+				update3(yearGroup);
+				$('#townSelect').val("0").prop({selected: true});
+				selectTown="";
+				run;
+				map.getView().setCenter(ol.proj.transform([121, 23.8], 'EPSG:4326', 'EPSG:3857'));
+				map.getView().setZoom(7);
+			}
+			interaction(mdata,selectct);
+		}
+
+
+		function drawGenderFigure(){
+			var drawdataGender=getDrawData("sex");
+			bar_chart(drawdataGender,selectSex);
+		}
+
+		function drawLineFigure(){
+			var drawdataLine=getDrawData("time");
+			line_chart(drawdataLine);
+		}
+
+		function drawdisFigure(){
+			var drawdatadis=getDrawData("dis");
+			bar_chart2(drawdatadis);
+		}
+
+		$(function(){
+			$("#basemap").append($("<option></option>").text("OpenStreetMap"));
+			$("#basemap").append($("<option></option>").attr("value", "EMAP").text("通用版電子地圖"));
+			$("#basemap").append($("<option></option>").attr("value", "TGOS").text("TGOS MAP"));
+			$("select#basemap").change(function(){
+				EMAP.setVisible(false);
+				TGOS.setVisible(false);
+				if($(this).val()=="EMAP"){
+					EMAP.setVisible(true);
+					TGOS.setVisible(false);
+				} else if($(this).val()=="TGOS"){
+					EMAP.setVisible(false);
+					TGOS.setVisible(true);
+				}
+			});
+
+			function click_fun(){
+				$(map.getViewport()).on('click', function(evt) {    	//點選zoom in 到特定feature
+					var pixel = map.getEventPixel(evt.originalEvent);
+					var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+						if(layer){
+							return feature;
+						}
+					}, null, function (layer) {
+						return layer === currentLayer;
+					});
+
+					var currentIdx;   //slider變換後的Idx
+					if(barYear<=2003){
+						currentIdx=0;
+					}else if (barYear>=2011)
+						currentIdx=2;
+					else
+						currentIdx=1;
+
+					$.ajax({
+						type: "POST",
+						async: false,
+						dataType: "json",
+						url: 'forCountrySelect2.php',
+						data: {
+							js: currentIdx,
+							jmc: feature.get("mapcode"),
+						},
+						success: function(_data){
+							selectCountyslider=_data[0].COUN_ID;
+							update2(yearGroup);
+							$("#countySelect option[value='"+selectCountyslider+"']").prop('selected', true);
+							update3(yearGroup);
+							$("#townSelect option[mapcode='"+feature.get("mapcode")+"']").prop('selected', true);
+						}
+					});
+
+					if(selectCounty == "全國"){
+						$("#LMI").css("display","inline-block");
+					}else{
+						$("#LMI").css("display","none");
+						$(map.getViewport()).unbind('mousemove');
+					}
+
+					run();
+					allupdate();
+
+					if(feature!==null){
+						featureOverlay.setVisible(false);
+					}
+				});
+			}
+
+			click_fun();
+
+			$('#playpause').bind("click", function() {
+				if ($("#playpause").attr("class") == "play"){
+					$("#playpause").attr("class", "pause");
+					e=setInterval(function(){
+						var t=$("#slider").slider("value");
+						cYear=t;
+						if(t<$("#slider").slider("option","max")){
+							$("#slider").slider("value",t+1);
+						}
+						else{
+							$("#slider").slider("value",$("#slider").slider("option","min"));
+						}
+					},1250)
+					$("#lv1").find("span").css("border","none");
+					$("#lv2").find("span").css("border","none");
+					$("#lv3").find("span").css("border","none");
+					$("#lv4").find("span").css("border","none");
+					$("#lv5").find("span").css("border","none");
+					$("#lv6").find("span").css("border","none");
+				}
+				else{
+					$("#playpause").attr("class", "play");
+					clearInterval(e);
+				}
+			});
+
+			$('#citytown')
+			  .empty()
+//			  .append(selectItemCounty).append(selectItemTown).append("<br />")
+			;
+
+			$("#slider").slider({
+				min: startyear,
+				max: endyear,
+				step: 1,
+				value: endyear,
+				animate:"fast",
+				orientation: "horizontal",
+				change: function(event,ui){
+
+					$('#containertitle')
+						.empty()
+						.append("鄉鎮市區排名").append("<br />")
+					;
+					barYear=ui.value;
+
+					var currentIdx;   //slider變換後的Idx
+					if(barYear<=2003){
+						currentIdx=0;
+					}else if (barYear>=2011)
+						currentIdx=2;
+					else
+						currentIdx=1;
+					selectTownCodeslider=$("#townSelect :selected").attr("mapcode");
+
+					$.ajax({
+						type: "POST",
+						async: false,
+						dataType: "json",
+						url: 'forCountrySelect2.php',
+						data: {
+							js: currentIdx,
+							jmc: selectTownCodeslider,
+						},
+						success: function(_data){
+						    if(_data.length!==0){
+								selectCountyslider=_data[0].COUN_ID;
+								if(currentIdx!=yearGroup){
+									yearGroup=currentIdx;
+									update2(yearGroup);
+									$("#countySelect option[value='"+selectCountyslider+"']").prop('selected', true);
+									update3(yearGroup);
+									$("#townSelect option[mapcode='"+selectTownCodeslider+"']").prop('selected', true);
+								}
+							}else{
+								if(currentIdx!=yearGroup){
+									yearGroup=currentIdx;
+										update2(yearGroup);
+										$("#countySelect option[value='0']").prop('selected', true);
+										update3(yearGroup);
+										$("#townSelect option[mapcode='0']").prop('selected', true);
+								}
+							}
+						}
+					});
+
+
+					var selectDisslider=$("#diseaseSelect :selected").val();
+
+					var currentGroup;
+					if(cYear==null)
+						cYear=barYear;
+					currentGroup=(barYear<=2007)?0:1;  //分為2個disease group
+
+					var itemIndex=0;
+					var selectDisslider_2=selectDisCode;
+					var selectDisslider_3;
+					if(barYear>2007 && Number(selectDisslider_2)<2000){
+						var causeid=[];
+						for(var i=0;i<item[1].item[0].item.length;i++){
+							causeid.push(Number(item[1].item[0].item[i].cause));
+						}
+						if($.inArray(  Number(selectDisslider_2), causeid )==-1){
+							itemIndex=1;
+						}
+						selectDisslider_3=selectDisslider_2;
+						selectDisslider_2=selectDisslider;
+					}else if(barYear>2007 && Number(selectDisslider_2)>2000){
+						var causeid=[];
+						for(var i=0;i<item[1].item[1].item.length;i++){
+							causeid.push(Number(item[1].item[1].item[i].cause));
+						}
+						if($.inArray(  Number(selectDisslider_2), causeid )==-1){
+							itemIndex=1;
+						}
+						selectDisslider_3=selectDisslider_2;
+						selectDisslider_2=selectDisslider;
+					}else if(barYear<=2007 && Number(selectDisslider_2)<2000){
+						var causeid=[];
+						for(var i=0;i<item[0].item[0].item.length;i++){
+							causeid.push(Number(item[0].item[0].item[i].cause));
+						}
+						if($.inArray(  Number(selectDisslider_2), causeid )==-1){
+							itemIndex=1;
+						}
+						selectDisslider_3=selectDisslider_2;
+						selectDisslider_2=selectDisslider;
+					}else if(barYear<=2007 && Number(selectDisslider_2)>2000){
+						var causeid=[];
+						for(var i=0;i<item[0].item[1].item.length;i++){
+							causeid.push(Number(item[0].item[1].item[i].cause));
+						}
+						if($.inArray( Number(selectDisslider_2), causeid )==-1){
+							itemIndex=1;
+						}
+						selectDisslider_3=selectDisslider_2;
+						selectDisslider_2=selectDisslider;
+					}
+
+					if(itemIndex==1){
+						select4nodisdata=Number(selectDisslider_2);
+					}
+
+					if(currentGroup!=diseaseGroup){
+						diseaseGroup=currentGroup;
+						update1(diseaseGroup);
+						$("#diseaseSelect option[value='"+selectDisslider_3+"']").prop('selected', true);
+						if(itemIndex==1){
+							if($("#diseaseSelect").find(":selected").val()!="無資料"){
+							  if($("diseaseSelect option[text='無資料']").length==0){
+								$('#diseaseSelect').append(
+								  $("<option/>").text("無資料").attr('value','無資料')
+								);
+							  }
+							  $("#diseaseSelect option[value='無資料']").prop('selected', true);
+							  $("#nodata").css("display","block");
+							}
+						}else if(isNaN(Number(selectDisslider_2))==true){
+							$("#diseaseSelect option[value='"+select4nodisdata+"']").prop('selected', true);
+						}
+						if(itemIndex==0){
+							$("#nodata").css("display","none");
+						}
+					}
+
+					run();
+					if(selectCounty !== "全國"){
+						selectTown=$("#townSelect :selected").val();
+						drawGenderFigure();
+						drawdisFigure();
+						if ($("#button1").attr("class") == "selected"){
+							$("#containertitle").css("display","block");
+							$("#container").css("display","block");
+							$("#container5title").css("display","none");
+							$("#container5").css("display","none");
+							$("#container2title").css("display","block");
+							$("#container2").css("display","block");
+							$("#container3title").css("display","block");
+							$("#container3").css("display","block");
+							$("#container4title").css("display","none");
+							$("#container4").css("display","none");
+						}else if ($("#button2").attr("class") == "selected"){
+							$("#containertitle").css("display","none");
+							$("#container").css("display","none");
+							$("#container5title").css("display","none");
+							$("#container5").css("display","none");
+							$("#container2title").css("display","none");
+							$("#container2").css("display","none");
+							$("#container3title").css("display","none");
+							$("#container3").css("display","none");
+							$("#container4title").css("display","block");
+							$("#container4").css("display","block");
+						}
+						$("#button1").css("display","block");
+						$("#button2").css("display","block");
+						$("#LMI").css("display","none");
+						$(map.getViewport()).unbind('mousemove');
+					}else{
+						$("#clear").css("display","none");
+						$("#containertitle").css("display","block");
+						$("#container").css("display","block");
+						$("#container5title").css("display","block");
+						$("#container5").css("display","block");
+						$("#container2title").css("display","none");
+						$("#container2").css("display","none");
+						$("#container3title").css("display","none");
+						$("#container3").css("display","none");
+						$("#container4title").css("display","none");
+						$("#container4").css("display","none");
+						$("#button1").css("display","none");
+						$("#button2").css("display","none");
+						$("#countySelect option[value='0']").prop('selected', true);
+						update3(yearGroup);
+						$('#townSelect').val("0").prop({selected: true});
+						selectTown="";
+					}
+					interaction(mdata,selectTown);
+				}
+			});
+
+			$("#clear").on('click', function(evt) {
+				featureOverlay.setVisible(true);
+				$("#LMI").css("display","inline-block");
+				clear_pre_fun(mdata);
+			});
+
+			$("#button1").on('click', function(evt) {
+				if(selectCounty !== "全國"){
+					if(selectTown !== "全區"){
+						$("#containertitle").css("display","block");
+						$("#container").css("display","block");
+						$("#container5title").css("display","none");
+						$("#container5").css("display","none");
+						$("#container2title").css("display","block");
+						$("#container2").css("display","block");
+						$("#container3title").css("display","block");
+						$("#container3").css("display","block");
+					}else{
+						$("#containertitle").css("display","none");
+						$("#container").css("display","none");
+						$("#container5title").css("display","none");
+						$("#container5").css("display","none");
+						$("#container2title").css("display","none");
+						$("#container2").css("display","none");
+						$("#container3title").css("display","none");
+						$("#container3").css("display","none");
+					}
+				}
+				$("#container4title").css("display","none");
+				$("#container4").css("display","none");
+			})
+
+			$("#button2").on('click', function(evt) {
+				$("#containertitle").css("display","none");
+				$("#container").css("display","none");
+				$("#container5title").css("display","none");
+				$("#container5").css("display","none");
+				$("#container2title").css("display","none");
+				$("#container2").css("display","none");
+				$("#container3title").css("display","none");
+				$("#container3").css("display","none");
+				if(selectCounty !== "全國"){
+					$("#container4title").css("display","block");
+					$("#container4").css("display","block");
+				}
+			})
+
+			$("#LMI").on('click', function(evt) {
+				$("#lmiloading").show();
+				if ($("#playpause").attr("class") == "pause"){
+					$("#playpause").attr("class", "play");
+					clearInterval(e);
+				}
+				lmi();
+				$("#LMI").hide();
+			})
+
+			function lmi(){
+				selectDisCode=$("#diseaseSelect :selected").val();
+				selectSex=$("#genderSelect :selected").val();
+				$.ajax({               //讀json並做計算, 得到output.json
+					type: "POST",
+//					async: false,
+					url: 'lmi.php',
+					dataType: "json",
+					data: {
+						jyear: barYear-1911,
+						jdis: selectDisCode,
+						jsex: selectSex,
+					},
+					success: function (data) {
+						lmi_color(features,data);
+						lmidata=data;
+						$("#lmiloading").hide();
+					}
+				});
+			}
+
+			function lmi_color(tfeatures,lmidata){
+				if(tfeatures ==null || tfeatures.length==0 ){
+					setTimeout(function(){
+						lmi_color();
+					},500);
+				}else{
+					for (var j = 0; j < tfeatures.length; j++) {
+						var feature=tfeatures[j];
+						for (var i = 0; i < lmidata.length; i++) {
+							if(feature.get("mapcode")==lmidata[i].mapcode){
+								if(lmidata[i].draw==true){
+									if(lmidata[i].lmi>6.8){
+										var style=new ol.style.Style({fill:new ol.style.Fill({color: [84,39,143, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}else if(lmidata[i].lmi<=6.8 && lmidata[i].lmi>5.1){
+										style=new ol.style.Style({fill:new ol.style.Fill({color: [117,107,177, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}else if(lmidata[i].lmi<=5.1 && lmidata[i].lmi>3.4){
+										style=new ol.style.Style({fill:new ol.style.Fill({color: [158,154,200, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}else if(lmidata[i].lmi<=3.4 && lmidata[i].lmi>1.7){
+										style=new ol.style.Style({fill:new ol.style.Fill({color: [188,189,220, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}else if(lmidata[i].lmi<=1.7 && lmidata[i].lmi>0){
+										style=new ol.style.Style({fill:new ol.style.Fill({color: [218,218,235, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}else{
+										style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+										feature.setStyle(style);
+									}
+								}else{
+									style=new ol.style.Style({fill:new ol.style.Fill({color: [242,240,247, 0.7]}),stroke:new ol.style.Stroke({color: 'white',width: 1})});
+									feature.setStyle(style);
+								}
+							}
+						}
+					}
+					$("#lmiloading").hide();
+					$("#legend1").hide();
+					$("#legend2").show();
+					$("#playpause").hide();
+					$("#slider").css("display","none");
+					$("#slidertext").css("display","none");
+					$("#startyeartext").css("display","none");
+					$("#endyeartext").css("display","none");
+					$("#containertitle").hide();
+					$("#container").hide();
+					$("#container5title").hide();
+					$("#container5").hide();
+					$("#lmiclear").show();
+					mouse_fun2(mdata,lmidata);
+					$('#citytown')
+						.empty()
+						.append('全國').append(' ').append("<br />");
+					document.getElementById("diseaseSelect").disabled = true;
+					document.getElementById("countySelect").disabled = true;
+					document.getElementById("townSelect").disabled = true;
+					document.getElementById("genderSelect").disabled = true;
+					$(map.getViewport()).unbind('click');
+				}
+			}
+
+			$("#lmiclear").on('click', function(evt){
+				mortality_color(features,mdata);
+				vectorLayer1.setVisible(false);
+				vectorLayer2.setVisible(false);
+				currentLayer=vectorLayer3;
+				vectorLayer3.setVisible(true);
+				selectCounty="全國";
+				if(selectCounty == "全國"){
+					$("#LMI").css("display","inline-block");
+				}else{
+					$("#LMI").css("display","none");
+				}
+				$("#legend1").show();
+				$("#legend2").hide();
+				$("#playpause").show();
+				$("#slider").css("display","block");
+				$("#slidertext").css("display","block");
+				$("#startyeartext").css("display","block");
+				$("#endyeartext").css("display","block");
+				$("#containertitle").show();
+				$("#container").show();
+				$("#container5title").show();
+				$("#container5").show();
+				$("#lmiclear").hide();
+				document.getElementById("diseaseSelect").disabled = false;
+				document.getElementById("countySelect").disabled = false;
+				document.getElementById("townSelect").disabled = false;
+				document.getElementById("genderSelect").disabled = false;
+				click_fun();
+			})
+		});
+
+		function mouse_fun(drawdata){
+			$(map.getViewport()).on('mousemove', function(evt){
+				var pixel = map.getEventPixel(evt.originalEvent);
+				var temp;
+				var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+					if(layer){
+						return feature;
+
+					}
+				}, null, function (layer) {
+				  return layer === currentLayer;
+				});
+				if(feature){
+					if(featureOverlay.getSource().getFeatures().length > 0){
+						temp = featureOverlay.getSource().getFeatures();
+						temp[0].setStyle(highlight);
+					}
+					featureOverlay.getSource().clear();
+					highlight = feature.getStyle();
+					featureOverlay.getSource().addFeature(feature);
+					var temp = featureOverlay.getSource().getFeatures();
+					temp[0].setStyle(new ol.style.Style({
+						stroke: new ol.style.Stroke({
+							color: '#7cb5ec',
+							width: 3
+						}),
+						fill: (feature.getStyle() == null) ? new ol.style.Fill({color:'rgba(1,1,1,0)'}) : feature.getStyle().getFill()
+					}))
+				}else{
+					if(featureOverlay.getSource().getFeatures().length > 0){
+						temp = featureOverlay.getSource().getFeatures();
+						temp[0].setStyle(highlight);
+					}
+					featureOverlay.getSource().clear();
+				}
+
+				var currentIdx;   //slider變換後的Idx
+				if(barYear<=2003){
+					currentIdx=0;
+				}else if (barYear>=2011)
+					currentIdx=2;
+				else
+					currentIdx=1;
+				var city_temp;
+
+					$.ajax({
+						type: "POST",
+						async: false,
+						dataType: "json",
+						url: 'forCountrySelect2.php',
+						data: {
+							js: currentIdx,
+							jmc: feature.get("mapcode"),
+						},
+						success: function(_data){
+							$('#citytown')
+								.empty()
+								.append(_data[0].City).append(_data[0].District).append("<br />");
+							city_temp=_data[0].City;
+						}
+					});
+				var md=[];
+				for(var i=0;i<drawdata.length;i++){
+					md.push(Number(drawdata[i].mortality));
+				}
+				md.sort(function(a,b){return b - a;});  //由大到小排列
+				var max=md[0];
+				var l1=max*0.2;
+				var l2=max*0.4;
+				var l3=max*0.6;
+				var l4=max*0.8;
+				for (var i = 0;i<drawdata.length;i++) {
+					if(drawdata[i].mapcode==feature.get("mapcode")){
+						var chart = $('#container').highcharts();
+						var xaxis = chart.xAxis[0];
+						var linevalue = i;
+						var linevalue1 = i+1;
+						$('#containertitle')
+							.empty()
+							.append("鄉鎮市區排名").append('：'+linevalue1+'/'+features.length).append("<br />");
+						xaxis.removePlotLine('plot-line-x');
+						xaxis.addPlotLine({
+							value: linevalue,
+							color: '#7cb5ec',
+							width: 1,
+							id: 'plot-line-x'
+						});
+						if(drawdata[i].mortality>l4){
+							$("#lv1").find("span").css("border","3px solid #7cb5ec");
+							$("#lv2").find("span").css("border","none");
+							$("#lv3").find("span").css("border","none");
+							$("#lv4").find("span").css("border","none");
+							$("#lv5").find("span").css("border","none");
+							$("#lv6").find("span").css("border","none");
+						}else if(drawdata[i].mortality<=l4 && drawdata[i].mortality>l3){
+							$("#lv2").find("span").css("border","3px solid #7cb5ec");
+							$("#lv1").find("span").css("border","none");
+							$("#lv3").find("span").css("border","none");
+							$("#lv4").find("span").css("border","none");
+							$("#lv5").find("span").css("border","none");
+							$("#lv6").find("span").css("border","none");
+						}else if(drawdata[i].mortality<=l3 && drawdata[i].mortality>l2){
+							$("#lv3").find("span").css("border","3px solid #7cb5ec");
+							$("#lv1").find("span").css("border","none");
+							$("#lv2").find("span").css("border","none");
+							$("#lv4").find("span").css("border","none");
+							$("#lv5").find("span").css("border","none");
+							$("#lv6").find("span").css("border","none");
+						}else if(drawdata[i].mortality<=l2 && drawdata[i].mortality>l1){
+							$("#lv4").find("span").css("border","3px solid #7cb5ec");
+							$("#lv1").find("span").css("border","none");
+							$("#lv2").find("span").css("border","none");
+							$("#lv3").find("span").css("border","none");
+							$("#lv5").find("span").css("border","none");
+							$("#lv6").find("span").css("border","none");
+						}else if(drawdata[i].mortality<=l1 && drawdata[i].mortality>0){
+							$("#lv5").find("span").css("border","3px solid #7cb5ec");
+							$("#lv1").find("span").css("border","none");
+							$("#lv2").find("span").css("border","none");
+							$("#lv3").find("span").css("border","none");
+							$("#lv4").find("span").css("border","none");
+							$("#lv6").find("span").css("border","none");
+						}else{
+							$("#lv6").find("span").css("border","3px solid #7cb5ec");
+							$("#lv1").find("span").css("border","none");
+							$("#lv2").find("span").css("border","none");
+							$("#lv3").find("span").css("border","none");
+							$("#lv4").find("span").css("border","none");
+							$("#lv5").find("span").css("border","none");
+						}
+					}
+
+				}
+			});
+		}
+
+		function mouse_fun2(drawdata,lmidata){
+			$(map.getViewport()).on('mousemove', function(evt){
+				var pixel = map.getEventPixel(evt.originalEvent);
+				var temp;
+				var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+					if(layer){
+						return feature;
+					}
+				}, null, function (layer) {
+					return layer === currentLayer;
+				});
+				if(feature){
+					if(featureOverlay.getSource().getFeatures().length > 0){
+						temp = featureOverlay.getSource().getFeatures();
+						temp[0].setStyle(highlight);
+					}
+					featureOverlay.getSource().clear();
+					highlight = feature.getStyle();
+					featureOverlay.getSource().addFeature(feature);
+					var temp = featureOverlay.getSource().getFeatures();
+					temp[0].setStyle(new ol.style.Style({
+						stroke: new ol.style.Stroke({
+							color: '#7cb5ec',
+							width: 3
+						}),
+						fill: (feature.getStyle() == null) ? new ol.style.Fill({color:'rgba(1,1,1,0)'}) : feature.getStyle().getFill()
+					}))
+				}else{
+					if(featureOverlay.getSource().getFeatures().length > 0){
+						temp = featureOverlay.getSource().getFeatures();
+						temp[0].setStyle(highlight);
+					}
+					featureOverlay.getSource().clear();
+				}
+				for (var i = 0;i<drawdata.length;i++) {
+					if(drawdata[i].mapcode==feature.get("mapcode")){
+						for (var j = 0;j<lmidata.length;j++) {
+							if(drawdata[i].mapcode==lmidata[j].mapcode){
+								if(lmidata[j].lmi>6.8 && lmidata[j].draw==true){
+									$("#lv7").find("span").css("border","3px solid #7cb5ec");
+									$("#lv8").find("span").css("border","none");
+									$("#lv9").find("span").css("border","none");
+									$("#lv10").find("span").css("border","none");
+									$("#lv11").find("span").css("border","none");
+									$("#lv12").find("span").css("border","none");
+								}else if(lmidata[j].lmi<=6.8 && lmidata[j].lmi>5.1 && lmidata[j].draw==true){
+									$("#lv8").find("span").css("border","3px solid #7cb5ec");
+									$("#lv7").find("span").css("border","none");
+									$("#lv9").find("span").css("border","none");
+									$("#lv10").find("span").css("border","none");
+									$("#lv11").find("span").css("border","none");
+									$("#lv12").find("span").css("border","none");
+								}else if(lmidata[j].lmi<=5.1 && lmidata[j].lmi>3.4 && lmidata[j].draw==true){
+									$("#lv9").find("span").css("border","3px solid #7cb5ec");
+									$("#lv8").find("span").css("border","none");
+									$("#lv7").find("span").css("border","none");
+									$("#lv10").find("span").css("border","none");
+									$("#lv11").find("span").css("border","none");
+									$("#lv12").find("span").css("border","none");
+								}else if(lmidata[j].lmi<=3.4 && lmidata[j].lmi>1.7 && lmidata[j].draw==true){
+									$("#lv10").find("span").css("border","3px solid #7cb5ec");
+									$("#lv8").find("span").css("border","none");
+									$("#lv9").find("span").css("border","none");
+									$("#lv7").find("span").css("border","none");
+									$("#lv11").find("span").css("border","none");
+									$("#lv12").find("span").css("border","none");
+								}else if(lmidata[j].lmi<=1.7 && lmidata[j].lmi>0 && lmidata[j].draw==true){
+									$("#lv11").find("span").css("border","3px solid #7cb5ec");
+									$("#lv8").find("span").css("border","none");
+									$("#lv9").find("span").css("border","none");
+									$("#lv10").find("span").css("border","none");
+									$("#lv7").find("span").css("border","none");
+									$("#lv12").find("span").css("border","none");
+								}else{
+									$("#lv12").find("span").css("border","3px solid #7cb5ec");
+									$("#lv8").find("span").css("border","none");
+									$("#lv9").find("span").css("border","none");
+									$("#lv10").find("span").css("border","none");
+									$("#lv11").find("span").css("border","none");
+									$("#lv7").find("span").css("border","none");
+								}
+							}
+						}
+					}
+				}
+			});
+		}
+
+		function interaction(drawdata,selectct){
+			var md=[];
+			for(var i=0;i<drawdata.length;i++){
+				md.push(Number(drawdata[i].mortality));
+			}
+			md.sort(function(a,b){return b - a;});  //由大到小排列
+			var max=md[0];
+			var l1=max*0.2;
+			var l2=max*0.4;
+			var l3=max*0.6;
+			var l4=max*0.8;
+
+			for (var i = 0;i<drawdata.length;i++) {
+				if(drawdata[i].mapcode==selectct){
+					var chart = $('#container').highcharts();
+					var xaxis = chart.xAxis[0];
+					var linevalue = i;
+					var linevalue1 = i+1;
+					$('#containertitle')
+						.empty()
+						.append("鄉鎮市區排名").append('：'+linevalue1+'/'+features.length).append("<br />");
+					xaxis.removePlotLine('plot-line-x');
+					xaxis.addPlotLine({
+						value: linevalue,
+						color: '#7cb5ec',
+						width: 1,
+						id: 'plot-line-x'
+					});
+					if(drawdata[i].mortality>l4){
+						$("#lv1").find("span").css("border","3px solid #7cb5ec");
+						$("#lv2").find("span").css("border","none");
+						$("#lv3").find("span").css("border","none");
+						$("#lv4").find("span").css("border","none");
+						$("#lv5").find("span").css("border","none");
+						$("#lv6").find("span").css("border","none");
+					}else if(drawdata[i].mortality<=l4 && drawdata[i].mortality>l3){
+						$("#lv2").find("span").css("border","3px solid #7cb5ec");
+						$("#lv1").find("span").css("border","none");
+						$("#lv3").find("span").css("border","none");
+						$("#lv4").find("span").css("border","none");
+						$("#lv5").find("span").css("border","none");
+						$("#lv6").find("span").css("border","none");
+					}else if(drawdata[i].mortality<=l3 && drawdata[i].mortality>l2){
+						$("#lv3").find("span").css("border","3px solid #7cb5ec");
+						$("#lv1").find("span").css("border","none");
+						$("#lv2").find("span").css("border","none");
+						$("#lv4").find("span").css("border","none");
+						$("#lv5").find("span").css("border","none");
+						$("#lv6").find("span").css("border","none");
+					}else if(drawdata[i].mortality<=l2 && drawdata[i].mortality>l1){
+						$("#lv4").find("span").css("border","3px solid #7cb5ec");
+						$("#lv1").find("span").css("border","none");
+						$("#lv2").find("span").css("border","none");
+						$("#lv3").find("span").css("border","none");
+						$("#lv5").find("span").css("border","none");
+						$("#lv6").find("span").css("border","none");
+					}else if(drawdata[i].mortality<=l1 && drawdata[i].mortality>0){
+						$("#lv5").find("span").css("border","3px solid #7cb5ec");
+						$("#lv1").find("span").css("border","none");
+						$("#lv2").find("span").css("border","none");
+						$("#lv3").find("span").css("border","none");
+						$("#lv4").find("span").css("border","none");
+						$("#lv6").find("span").css("border","none");
+					}else{
+						$("#lv6").find("span").css("border","3px solid #7cb5ec");
+						$("#lv1").find("span").css("border","none");
+						$("#lv2").find("span").css("border","none");
+						$("#lv3").find("span").css("border","none");
+						$("#lv4").find("span").css("border","none");
+						$("#lv5").find("span").css("border","none");
+					}
+				}
+			}
+		}
+
+		function clear_pre_fun(drawdata){
+			update2(yearGroup);
+			$("#countySelect option[value='0']").prop('selected', true);
+			update3(yearGroup);
+			$('#townSelect').val("").prop({selected: true});
+			selectTown="";
+			run();
+			map.getView().setCenter(ol.proj.transform([121, 23.8], 'EPSG:4326', 'EPSG:3857'));
+			map.getView().setZoom(7);
+			$('#containertitle')
+				.empty()
+				.append("鄉鎮市區排名").append("<br />");
+
+			mouse_fun(mdata);
+
+			$("#clear").css("display","none");
+			$("#containertitle").css("display","block");
+			$("#container").css("display","block");
+			$("#container5title").css("display","block");
+			$("#container5").css("display","block");
+			$("#container2title").css("display","none");
+			$("#container2").css("display","none");
+			$("#container3title").css("display","none");
+			$("#container3").css("display","none");
+			$("#container4title").css("display","none");
+			$("#container4").css("display","none");
+			$("#button1").css("display","none");
+			$("#button2").css("display","none");
+		}
+
+		function column_chart(drawdata,features){//鄉鎮排名
+			var labels=[];
+			var labels2=[];
+			var vdata=[];
+			var vdata_csv=[['Rank','Area','mortality']];
+			var color=[];
+			var ctlb=[];
+			var dlb=[];
+			var ctdlb=[];
+			var codelb=[];
+			var flag;
+
+			drawdata.sort(function(a,b){return b.mortality - a.mortality;});  //由大到小排列
+
+
+				for(i=0;i<drawdata.length;i++){
+					labels.push(drawdata[i].mapcode);
+					labels2.push(i+1);
+					vdata.push(Math.round(Number(drawdata[i].mortality)*100)/100);
+					ctlb.push(drawdata[i].City);
+					dlb.push(drawdata[i].District);
+					str1=drawdata[i].City;
+					str2=drawdata[i].District;
+					ctdlb.push(str1.concat(str2));
+					codelb.push(drawdata[i].mapcode);
+					vdata_csv.push([i+1,str1.concat(str2),Math.round(Number(drawdata[i].mortality)*100)/100]);
+				}
+				flag=0;
+
+			var max=vdata[0];
+			var l1=max*0.2;
+			var l2=max*0.4;
+			var l3=max*0.6;
+			var l4=max*0.8;
+			for(i=0;i<drawdata.length;i++){
+				if(vdata[i]>l4){
+					color.push('rgba(179, 0, 0, 0.7)');
+				}else if(vdata[i]<=l4 && vdata[i]>l3){
+					color.push('rgba(227, 74, 51, 0.7)');
+				}else if(vdata[i]<=l3 && vdata[i]>l2){
+					color.push('rgba(252, 141, 89, 0.7)');
+				}else if(vdata[i]<=l2 && vdata[i]>l1){
+					color.push('rgba(253, 187, 132, 0.7)');
+				}else if(vdata[i]<=l1 && vdata[i]>0){
+					color.push('rgba(253, 212, 158, 0.7)');
+				}else{
+					color.push('rgba(242,240,247, 0.7)');
+				}
+			}
+			$('#container').highcharts({
+				tooltip: {
+					borderColor: '#7cb5ec',
+					crosshairs: [{
+						width: 1.5,
+						dashStyle: 'solid',
+						color: '#7cb5ec'
+					}, false],
+					useHTML: true,
+					formatter: function () {
+						if (this.y != 0) {
+							var k=this.x-1;
+							return '<b>' + ctdlb[k] + '</b><br>' + this.x + '/' + drawdata.length + '<br>標準化死亡 : ' + this.y;
+						} else {
+							return false;
+						}
+					}
+				},
+				chart: {
+					type: 'column'
+				},
+				credits: {
+					//enabled: false
+					text: 'mortality.geohealth.tw',
+					href: 'http://mortality.geohealth.tw/'
+				},
+				title: {
+					text: null
+				},
+				xAxis: {
+					categories: labels2
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '人/每十萬人',
+						align: 'high'
+					},
+					labels: {
+						overflow: 'justify'
+					}
+				},
+				plotOptions: {
+					series: {
+						colorByPoint: true ,
+						colors: color,
+						point: {
+							events: {
+								mouseOver: function () {
+									if(selectCounty == "全國"){
+										var x=this.x;
+										var y=this.y;
+										$('#citytown')
+										  .empty()
+										  .append(ctdlb[x]).append("<br />");
+										if(y>l4){
+											$("#lv1").find("span").css("border","3px solid #7cb5ec");
+											$("#lv2").find("span").css("border","none");
+											$("#lv3").find("span").css("border","none");
+											$("#lv4").find("span").css("border","none");
+											$("#lv5").find("span").css("border","none");
+											$("#lv6").find("span").css("border","none");
+										}else if(y<=l4 && y>l3){
+											$("#lv2").find("span").css("border","3px solid #7cb5ec");
+											$("#lv1").find("span").css("border","none");
+											$("#lv3").find("span").css("border","none");
+											$("#lv4").find("span").css("border","none");
+											$("#lv5").find("span").css("border","none");
+											$("#lv6").find("span").css("border","none");
+										}else if(y<=l3 && y>l2){
+											$("#lv3").find("span").css("border","3px solid #7cb5ec");
+											$("#lv1").find("span").css("border","none");
+											$("#lv2").find("span").css("border","none");
+											$("#lv4").find("span").css("border","none");
+											$("#lv5").find("span").css("border","none");
+											$("#lv6").find("span").css("border","none");
+										}else if(y<=l2 && y>l1){
+											$("#lv4").find("span").css("border","3px solid #7cb5ec");
+											$("#lv1").find("span").css("border","none");
+											$("#lv2").find("span").css("border","none");
+											$("#lv3").find("span").css("border","none");
+											$("#lv5").find("span").css("border","none");
+											$("#lv6").find("span").css("border","none");
+										}else if(y<=l1 && y>0){
+											$("#lv5").find("span").css("border","3px solid #7cb5ec");
+											$("#lv1").find("span").css("border","none");
+											$("#lv2").find("span").css("border","none");
+											$("#lv3").find("span").css("border","none");
+											$("#lv4").find("span").css("border","none");
+											$("#lv6").find("span").css("border","none");
+										}else{
+											$("#lv6").find("span").css("border","3px solid #7cb5ec");
+											$("#lv1").find("span").css("border","none");
+											$("#lv2").find("span").css("border","none");
+											$("#lv3").find("span").css("border","none");
+											$("#lv4").find("span").css("border","none");
+											$("#lv5").find("span").css("border","none");
+										}
+
+										var kk=this.x+1;
+										for (var j = 0; j < features.length; j++) {
+											var feature=features[j];
+											var feamapcode=feature.get("mapcode");
+											if(feamapcode==codelb[x]){
+												$('#containertitle')
+													.empty()
+													.append("鄉鎮市區排名").append('：'+kk+'/'+features.length).append("<br />");
+												if(feature){
+													if(featureOverlay.getSource().getFeatures().length > 0){
+														temp = featureOverlay.getSource().getFeatures();
+														temp[0].setStyle(highlight);
+													}
+													featureOverlay.getSource().clear();
+													highlight = feature.getStyle();
+													featureOverlay.getSource().addFeature(feature);
+													var temp = featureOverlay.getSource().getFeatures();
+													temp[0].setStyle(new ol.style.Style({
+														stroke: new ol.style.Stroke({
+															color: '#7cb5ec',
+															width: 3
+														}),
+														fill: (feature.getStyle() == null) ? new ol.style.Fill({color:'rgba(1,1,1,0)'}) : feature.getStyle().getFill()
+													}))
+
+												}else{
+													if(featureOverlay.getSource().getFeatures().length > 0){
+														temp = featureOverlay.getSource().getFeatures();
+														temp[0].setStyle(highlight);
+													}
+													featureOverlay.getSource().clear();
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				series: [{
+					name: '標準化死亡率',
+					data: vdata,
+					dataLabels: {
+						enabled: true,
+						rotation: -25,
+						align: 'left',
+						formatter:function () {
+							if (flag==1 && this.y != 0) {
+								var k=this.x-1;
+								return ctlb[k];
+							}
+						},
+						y: 0,
+						style: {
+							fontSize: '9px',
+						}
+					},
+					animation: false,
+					showInLegend: false
+				}],
+				exporting: {
+					buttons: {
+						contextButton: {
+							menuItems: [{
+								textKey: 'downloadPNG',
+								onclick: function () {
+									this.exportChart();
+								}
+							}, {
+								textKey: 'downloadPDF',
+								onclick: function () {
+									this.exportChart({
+										type: 'application/pdf'
+									});
+								}
+							}, {
+							   textKey: 'downloadCSV',
+							   onclick: function () {
+									var data = vdata_csv;
+									var csvContent = "data:text/csv;charset=utf-8,";
+									data.forEach(function(infoArray, index){
+
+									   dataString = infoArray.join(",");
+									   csvContent += index < data.length ? dataString+ "\n" : dataString;
+
+									});
+									var encodedUri = encodeURI(csvContent);
+									var link = document.createElement("a");
+									link.setAttribute("href", encodedUri);
+									link.setAttribute("download", "rank_town.csv");
+									document.body.appendChild(link);
+									link.click();
+							   }
+							}, {
+								textKey: 'printChart',
+								onclick: function () {
+									this.print();
+								}
+							}, {
+								text: '檔案下載後請使用UTF-8編碼'
+							}]
+						}
+					}
+				}
+			});
+			if(max<5){
+				var l11=Math.round(max*0.2*100)/100;
+				var l21=Math.round(max*0.4*100)/100;
+				var l31=Math.round(max*0.6*100)/100;
+				var l41=Math.round(max*0.8*100)/100;
+			}else{
+				var l11=Math.round(max*0.2);
+				var l21=Math.round(max*0.4);
+				var l31=Math.round(max*0.6);
+				var l41=Math.round(max*0.8);
+			}
+			$("#lv1").find("h").empty().append('>'+l41);
+			$("#lv2").find("h").empty().append(l31+'~'+l41);
+			$("#lv3").find("h").empty().append(l21+'~'+l31);
+			$("#lv4").find("h").empty().append(l11+'~'+l21);
+			$("#lv5").find("h").empty().append('<'+l11);
+			$("#lv6").find("h").empty().append('0');
+		}
+
+		function bar_chart(datag,Gender_s){  //性別比較
+			var vdata=[0,0,0];
+			var color=[];
+			color.push('#810f7c');
+			color.push('#7cb5ec');
+			color.push('#f768a1');
+			for(j=0;j<3;j++){
+				for(i=0;i<datag.length;i++){
+					if(datag[i].sex==j){
+						vdata[j]=(Math.round(Number(datag[i].mortality)*100)/100);
+					}
+				}
+			}
+
+			$('#container2').highcharts({
+				tooltip: {
+					borderColor: '#7cb5ec',
+				},
+				chart: {
+					type: 'bar'
+				},
+				credits: {
+					//enabled: false
+					text: 'mortality.geohealth.tw',
+					href: 'http://mortality.geohealth.tw/'
+				},
+				title: {
+					text: null
+				},
+				xAxis: {
+					categories: ['不分性別', '男性', '女性'],
+					title: {
+						text: null
+					}
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '人/每十萬人',
+						align: 'high'
+					},
+					labels: {
+						overflow: 'justify'
+					}
+				},
+				plotOptions: {
+					series: {
+						colorByPoint: true ,
+						colors: color
+					}
+				},
+				series: [{
+					name: '標準化死亡率',
+					data: vdata,
+					animation: false,
+					showInLegend: false
+				}],
+				exporting: {
+					buttons: {
+						contextButton: {
+							menuItems: [{
+								textKey: 'downloadPNG',
+								onclick: function () {
+									this.exportChart();
+								}
+							}, {
+								textKey: 'downloadPDF',
+								onclick: function () {
+									this.exportChart({
+										type: 'application/pdf'
+									});
+								}
+							}, {
+							   textKey: 'downloadCSV',
+							   onclick: function () {
+								   this.downloadCSV();
+							   }
+							}, {
+								textKey: 'printChart',
+								onclick: function () {
+									this.print();
+								}
+							}, {
+								text: '檔案下載後請使用UTF-8編碼'
+							}]
+						}
+					}
+				}
+			});
+		}
+
+		function line_chart(dataL){//時間趨勢
+			var labels=[];
+			var vdata=[];
+			var yearvalue= [];
+			var lys;
+			var lye;
+			selectDisCode=$("#diseaseSelect :selected").val();
+			if(barYear>2007 && Number(selectDisCode)<2000){
+				var causeid=[];
+				for(var i=0;i<item[0].item[0].item.length;i++){
+					causeid.push(Number(item[0].item[0].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=2008;
+					var lye=endyear;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear>2007 && Number(selectDisCode)>2000){
+				var causeid=[];
+				for(var i=0;i<item[0].item[1].item.length;i++){
+					causeid.push(Number(item[0].item[1].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=2008;
+					var lye=endyear;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear<=2007 && Number(selectDisCode)<2000){
+				var causeid=[];
+				for(var i=0;i<item[1].item[0].item.length;i++){
+					causeid.push(Number(item[1].item[0].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=startyear;
+					var lye=2007;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear<=2007 && Number(selectDisCode)>2000){
+				var causeid=[];
+				for(var i=0;i<item[1].item[1].item.length;i++){
+					causeid.push(Number(item[1].item[1].item[i].cause));
+				}
+				if($.inArray( Number(selectDisCode), causeid )==-1){
+					var lys=startyear;
+					var lye=2007;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}
+			for(var i=lys; i<lye+1; ++i) {
+					var temp_y=i;
+					yearvalue=yearvalue.concat(temp_y);
+			}
+			for (i=0;i<yearvalue.length;i++){
+				vdata[i]=0;
+				for(j=0;j<dataL.length;j++){
+					if(String(yearvalue[i]-1911)==dataL[j].year){
+						vdata[i]=Math.round(Number(dataL[j].mortality)*100)/100;
+					}
+				}
+				labels.push(String(yearvalue[i]));
+			}
+
+			var color=[];
+			selectSex=$("#genderSelect :selected").val();
+			if(selectSex==0){
+				color.push('#810f7c');
+			}else if(selectSex==1){
+				color.push('#7cb5ec');
+			}else if(selectSex==2){
+				color.push('#f768a1');
+			}
+
+			$('#container3').highcharts({
+				tooltip: {
+					borderColor: '#7cb5ec',
+				},
+				credits: {
+					//enabled: false
+					text: 'mortality.geohealth.tw',
+					href: 'http://mortality.geohealth.tw/'
+				},
+				title: {
+					text: null
+				},
+				colors: color,
+				xAxis: {
+					categories: labels,
+					title: {
+						text: null
+					}
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '人/每十萬人',
+						align: 'high'
+					},
+					labels: {
+						overflow: 'justify'
+					}
+				},
+				series: [{
+					name: '標準化死亡率',
+					data: vdata,
+					animation: false,
+					showInLegend: false,
+				}],
+				exporting: {
+					buttons: {
+						contextButton: {
+							menuItems: [{
+								textKey: 'downloadPNG',
+								onclick: function () {
+									this.exportChart();
+								}
+							}, {
+								textKey: 'downloadPDF',
+								onclick: function () {
+									this.exportChart({
+										type: 'application/pdf'
+									});
+								}
+							}, {
+							   textKey: 'downloadCSV',
+							   onclick: function () {
+								   this.downloadCSV();
+							   }
+							}, {
+								textKey: 'printChart',
+								onclick: function () {
+									this.print();
+								}
+							}, {
+								text: '檔案下載後請使用UTF-8編碼'
+							}]
+						}
+					}
+				}
+			});
+
+		}
+
+		function bar_chart2(datat){//疾病排名(前十名)
+			datat.sort(function(a,b){return b.mortality - a.mortality;});  //由大到小排列
+			var labels=[];
+			var vdata=[];
+			if(datat.length>=11){
+				for(i=0;i<10;i++){
+					labels.push(datat[i].cause_name);
+					vdata.push(Math.round(Number(datat[i].mortality)*100)/100);
+				}
+			}else{
+				for(i=0;i<datat.length;i++){
+					labels.push(datat[i].cause_name);
+					vdata.push(Math.round(Number(datat[i].mortality)*100)/100);
+				}
+			}
+
+			var color=[];
+			selectSex=$("#genderSelect :selected").val();
+			if(selectSex==0){
+				color.push('#810f7c');
+			}else if(selectSex==1){
+				color.push('#7cb5ec');
+			}else if(selectSex==2){
+				color.push('#f768a1');
+			}
+
+			$('#container4').highcharts({
+				tooltip: {
+					borderColor: '#7cb5ec',
+				},
+				chart: {
+					type: 'bar'
+				},
+				credits: {
+					//enabled: false
+					text: 'mortality.geohealth.tw',
+					href: 'http://mortality.geohealth.tw/'
+				},
+				title: {
+					text: null
+				},
+				colors: color,
+				xAxis: {
+					categories: labels,
+					title: {
+						text: null
+					}
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '人/每十萬人',
+						align: 'high'
+					},
+					labels: {
+						overflow: 'justify'
+					}
+				},
+				series: [{
+					name: '標準化死亡率',
+					data: vdata,
+					animation: false,
+					showInLegend: false
+				}],
+				exporting: {
+					buttons: {
+						contextButton: {
+							menuItems: [{
+								textKey: 'downloadPNG',
+								onclick: function () {
+									this.exportChart();
+								}
+							}, {
+								textKey: 'downloadPDF',
+								onclick: function () {
+									this.exportChart({
+										type: 'application/pdf'
+									});
+								}
+							}, {
+							   textKey: 'downloadCSV',
+							   onclick: function () {
+								   this.downloadCSV();
+							   }
+							}, {
+								textKey: 'printChart',
+								onclick: function () {
+									this.print();
+								}
+							}, {
+								text: '檔案下載後請使用UTF-8編碼'
+							}]
+						}
+					}
+				}
+			});
+		}
+
+		function line_chart2(dataL){//時間趨勢
+			var labels=[];
+			var vdata=[];
+			var yearvalue= [];
+			var lys;
+			var lye;
+			selectDisCode=$("#diseaseSelect :selected").val();
+			if(barYear>2007 && Number(selectDisCode)<2000){
+				var causeid=[];
+				for(var i=0;i<item[0].item[0].item.length;i++){
+					causeid.push(Number(item[0].item[0].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=2008;
+					var lye=endyear;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear>2007 && Number(selectDisCode)>2000){
+				var causeid=[];
+				for(var i=0;i<item[0].item[1].item.length;i++){
+					causeid.push(Number(item[0].item[1].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=2008;
+					var lye=endyear;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear<=2007 && Number(selectDisCode)<2000){
+				var causeid=[];
+				for(var i=0;i<item[1].item[0].item.length;i++){
+					causeid.push(Number(item[1].item[0].item[i].cause));
+				}
+				if($.inArray(  Number(selectDisCode), causeid )==-1){
+					var lys=startyear;
+					var lye=2007;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}else if(barYear<=2007 && Number(selectDisCode)>2000){
+				var causeid=[];
+				for(var i=0;i<item[1].item[1].item.length;i++){
+					causeid.push(Number(item[1].item[1].item[i].cause));
+				}
+				if($.inArray( Number(selectDisCode), causeid )==-1){
+					var lys=startyear;
+					var lye=2007;
+				}else{
+					var lys=startyear;
+					var lye=endyear;
+				}
+			}
+			for(var i=lys; i<lye+1; ++i) {
+					var temp_y=i;
+					yearvalue=yearvalue.concat(temp_y);
+			}
+			for (i=0;i<yearvalue.length;i++){
+				vdata[i]=0;
+				for(j=0;j<dataL.length;j++){
+					if(String(yearvalue[i]-1911)==dataL[j].year){
+						vdata[i]=Math.round(Number(dataL[j].mortality)*100)/100;
+					}
+				}
+				labels.push(String(yearvalue[i]));
+			}
+
+			var color=[];
+			selectSex=$("#genderSelect :selected").val();
+			if(selectSex==0){
+				color.push('#810f7c');
+			}else if(selectSex==1){
+				color.push('#7cb5ec');
+			}else if(selectSex==2){
+				color.push('#f768a1');
+			}
+
+			$('#container5').highcharts({
+				tooltip: {
+					borderColor: '#7cb5ec',
+				},
+				credits: {
+					//enabled: false
+					text: 'mortality.geohealth.tw',
+					href: 'http://mortality.geohealth.tw/'
+				},
+				title: {
+					text: null
+				},
+				colors: color,
+				xAxis: {
+					categories: labels,
+					title: {
+						text: null
+					}
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: '人/每十萬人',
+						align: 'high'
+					},
+					labels: {
+						overflow: 'justify'
+					}
+				},
+				series: [{
+					name: '標準化死亡率',
+					data: vdata,
+					animation: false,
+					showInLegend: false,
+				}],
+				exporting: {
+					buttons: {
+						contextButton: {
+							menuItems: [{
+								textKey: 'downloadPNG',
+								onclick: function () {
+									this.exportChart();
+								}
+							}, {
+								textKey: 'downloadPDF',
+								onclick: function () {
+									this.exportChart({
+										type: 'application/pdf'
+									});
+								}
+							}, {
+							   textKey: 'downloadCSV',
+							   onclick: function () {
+								   this.downloadCSV();
+							   }
+							}, {
+								textKey: 'printChart',
+								onclick: function () {
+									this.print();
+								}
+							}, {
+								text: '檔案下載後請使用UTF-8編碼'
+							}]
+						}
+					}
+				}
+			});
+
+		}
+
+	</script>
+
+
+
+</body>
+</html>
