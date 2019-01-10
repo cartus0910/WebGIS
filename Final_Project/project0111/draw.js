@@ -1,6 +1,6 @@
 // case 7
 getStyle7 = function (feature, resolution) {
-    if (0.0 < feature.get('Case_7_percent') < 0.1) {
+    if (0.0 < feature.get('Case_7_percent') < 0.2) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [240, 15, 0, 0.5] // semi-transparent red
@@ -8,56 +8,56 @@ getStyle7 = function (feature, resolution) {
         });
     }
     // else if ...
-	else if (0.1 < feature.get('Case_7_percent') < 0.2) {
+	else if (0.2 < feature.get('Case_7_percent') < 0.4) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [215, 40, 0, 0.5]
 			})
 		});
 	}
-	else if (0.2 < feature.get('Case_7_percent') < 0.3) {
+	else if (0.4 < feature.get('Case_7_percent') < 0.6) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [190, 65, 0, 0.5]
 			})
 		});
 	}
-	else if (0.3 < feature.get('Case_7_percent') < 0.4) {
+	else if (0.6 < feature.get('Case_7_percent') < 0.65) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [165, 90, 0, 0.5]
 			})
 		});
 	}
-	else if (0.4 < feature.get('Case_7_percent') < 0.5) {
+	else if (0.65 < feature.get('Case_7_percent') < 0.7) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [140, 115, 0, 0.5]
 			})
 		});
 	}
-	else if (0.5 < feature.get('Case_7_percent') < 0.6) {
+	else if (0.7 < feature.get('Case_7_percent') < 0.75) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [115, 140, 0, 0.5]
 			})
 		});
 	}
-	else if (0.6 < feature.get('Case_7_percent') < 0.7) {
+	else if (0.75 < feature.get('Case_7_percent') < 0.85) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [90, 165, 0, 0.5]
 			})
 		});
 	}
-	else if (0.7 < feature.get('Case_7_percent') < 0.8) {
+	else if (0.85 < feature.get('Case_7_percent') < 0.9) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [65, 190, 0, 0.5]
 			})
 		});
 	}
-	else if (0.8 < feature.get('Case_7_percent') < 0.9) {
+	else if (0.9 < feature.get('Case_7_percent') < 0.95) {
         return new ol.style.Style({
             fill: new ol.style.Fill({
                 color: [40, 215, 0, 0.5]
